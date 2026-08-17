@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPI 플래너</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="app-header">
+    <div class="app-header-top">
+      <h1>KPI 플래너</h1>
+      <button class="btn ghost" id="btn-help">❓ 사용설명서</button>
+    </div>
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="kpi">연간 KPI</button>
+      <button class="tab-btn" data-tab="calendar">달력<span class="tab-badge hidden" id="calendar-tab-badge"></span></button>
+      <button class="tab-btn" data-tab="daily">일간</button>
+      <button class="tab-btn" data-tab="weekly">주간</button>
+      <button class="tab-btn" data-tab="monthly">월간</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- KPI TAB -->
+    <section id="tab-kpi" class="tab-panel active">
+      <div class="panel-head">
+        <div class="summary" id="kpi-summary"></div>
+        <button class="btn primary" id="btn-add-kpi">+ 새 KPI</button>
+      </div>
+      <div class="kpi-grid" id="kpi-list"></div>
+    </section>
+
+    <!-- CALENDAR TAB -->
+    <section id="tab-calendar" class="tab-panel">
+      <div id="alarm-banner"></div>
+      <div class="planner-nav">
+        <button class="btn icon" data-nav="calendar:-1">‹</button>
+        <div class="planner-title" id="calendar-title"></div>
+        <button class="btn icon" data-nav="calendar:1">›</button>
+        <button class="btn ghost" data-nav="calendar:0">이번 달</button>
+      </div>
+      <div class="panel-head">
+        <div class="summary" id="calendar-summary"></div>
+        <button class="btn primary" id="btn-add-event">+ 일정 추가</button>
+      </div>
+      <div class="calendar-grid" id="calendar-grid"></div>
+    </section>
+
+    <!-- DAILY TAB -->
+    <section id="tab-daily" class="tab-panel">
+      <div class="planner-nav">
+        <button class="btn icon" data-nav="daily:-1">‹</button>
+        <div class="planner-title" id="daily-title"></div>
+        <button class="btn icon" data-nav="daily:1">›</button>
+        <button class="btn ghost" data-nav="daily:0">오늘</button>
+      </div>
+      <div class="panel-head">
+        <div class="summary" id="daily-summary"></div>
+        <button class="btn primary" data-add="daily">+ 할 일 추가</button>
+      </div>
+      <ul class="task-list" id="daily-list"></ul>
+
+      <div class="section-divider"></div>
+      <div class="panel-head">
+        <h2 class="section-title">날짜 미정 · 장기 준비 업무</h2>
+      </div>
+      <div class="undated-list" id="undated-events-list"></div>
+    </section>
+
+    <!-- WEEKLY TAB -->
+    <section id="tab-weekly" class="tab-panel">
+      <div class="planner-nav">
+        <button class="btn icon" data-nav="weekly:-1">‹</button>
+        <div class="planner-title" id="weekly-title"></div>
+        <button class="btn icon" data-nav="weekly:1">›</button>
+        <button class="btn ghost" data-nav="weekly:0">이번 주</button>
+      </div>
+      <div class="panel-head">
+        <div class="summary" id="weekly-summary"></div>
+        <div class="panel-head-actions">
+          <button class="btn" id="btn-weekly-summary-toggle">업무 요약 보기</button>
+          <button class="btn primary" data-add="weekly">+ 할 일 추가</button>
+        </div>
+      </div>
+      <div class="weekly-summary-panel hidden" id="weekly-summary-panel"></div>
+      <ul class="task-list" id="weekly-list"></ul>
+    </section>
+
+    <!-- MONTHLY TAB -->
+    <section id="tab-monthly" class="tab-panel">
+      <div class="planner-nav">
+        <button class="btn icon" data-nav="monthly:-1">‹</button>
+        <div class="planner-title" id="monthly-title"></div>
+        <button class="btn icon" data-nav="monthly:1">›</button>
+        <button class="btn ghost" data-nav="monthly:0">이번 달</button>
+      </div>
+      <div class="panel-head">
+        <div class="summary" id="monthly-summary"></div>
+        <button class="btn primary" data-add="monthly">+ 할 일 추가</button>
+      </div>
+      <ul class="task-list" id="monthly-list"></ul>
+    </section>
+  </main>
+</div>
+
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal" id="modal"></div>
+</div>
+
+<div class="confirm-overlay hidden" id="confirm-overlay">
+  <div class="confirm-box" id="confirm-box"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
