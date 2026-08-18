@@ -612,6 +612,23 @@ body {
   white-space: nowrap;
 }
 
+.due-time-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  color: var(--primary);
+  background: rgba(59, 91, 253, 0.1);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.note-indicator {
+  flex-shrink: 0;
+  font-size: 13px;
+  cursor: help;
+}
+
 .task-row {
   cursor: pointer;
 }

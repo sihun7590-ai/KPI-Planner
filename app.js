@@ -329,6 +329,8 @@
         <input type="checkbox" class="task-checkbox" data-act="toggle-task" ${t.done ? 'checked' : ''}>
         ${t.priority ? `<span class="priority-badge">#${t.priority}</span>` : ''}
         ${t.carriedFrom ? `<span class="carry-badge" title="원래 날짜: ${t.carriedFrom}">↻ 이월</span>` : ''}
+        ${t.dueTime ? `<span class="due-time-badge">⏰ ${t.dueTime}까지</span>` : ''}
+        ${t.note ? `<span class="note-indicator" title="${escapeHtml(t.note)}">📝</span>` : ''}
         <span class="task-title">${escapeHtml(t.title)}</span>
         <select class="inline-category-select" data-act="inline-category" style="background:${cat ? cat.color : 'var(--surface)'};color:${cat ? '#fff' : 'var(--text-muted)'};border-color:${cat ? 'transparent' : 'var(--border)'}">
           <option value="" ${!t.category ? 'selected' : ''}>구분 없음</option>
@@ -929,6 +931,14 @@
             ${kpiOptions}
           </select>
         </div>
+        <div class="field">
+          <label>메모 (선택)</label>
+          <textarea name="note" placeholder="세부 내용이나 참고사항을 적어두세요">${isEdit ? escapeHtml(existingTask.note || '') : ''}</textarea>
+        </div>
+        <div class="field">
+          <label>목표 시간 (선택, ~까지 완료)</label>
+          <input type="time" name="dueTime" value="${isEdit ? (existingTask.dueTime || '') : ''}">
+        </div>
         ${commonFields}
         ${dateFieldHtml}
         ${recurrenceField}
@@ -963,6 +973,8 @@
         if (isEdit) {
           existingTask.title = title;
           existingTask.kpiId = fd.get('kpiId') || null;
+          existingTask.note = fd.get('note').trim();
+          existingTask.dueTime = fd.get('dueTime') || null;
           existingTask.priority = Number(fd.get('priority')) || 1;
           existingTask.category = fd.get('category') || null;
           if (planType === 'daily') {
@@ -993,6 +1005,8 @@
           id: uid(),
           title,
           kpiId: fd.get('kpiId') || null,
+          note: fd.get('note').trim(),
+          dueTime: fd.get('dueTime') || null,
           planType,
           scopeKey,
           done: false,
