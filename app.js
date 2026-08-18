@@ -1,14 +1,31 @@
 (() => {
   const STORAGE_KEY = 'kpi-planner-data-v1';
-  const PALETTE = ['#3b5bfd', '#e0972a', '#22a06b', '#e5484d', '#8a5bf6', '#0ea5b7', '#d6479a', '#6b7280'];
+  const PALETTE = ['#3f6f9c', '#a8681f', '#2e7d5b', '#b04a45', '#6b5ca5', '#2c7f8c', '#a4508b', '#6b7280'];
   const DEFAULT_EVENT_TYPES = [
-    { id: 'construction', label: '공사', color: '#d97706' },
-    { id: 'other', label: '기타일정', color: '#7c5cff' },
+    { id: 'construction', label: '공사', color: '#a8681f' },
+    { id: 'other', label: '기타일정', color: '#6b5ca5' },
   ];
   const DEFAULT_TASK_CATEGORIES = [
-    { id: 'work', label: '생산 및 업무', color: '#3b5bfd' },
-    { id: 'she', label: 'SHE', color: '#0ea5b7' },
+    { id: 'work', label: '생산 및 업무', color: '#3f6f9c' },
+    { id: 'she', label: 'SHE', color: '#2c7f8c' },
   ];
+
+  // 인라인 SVG 아이콘 (이모지 대신 사용해 어느 기기에서나 동일하게 보이도록)
+  const svg = (body, size) => `<svg class="ic" viewBox="0 0 16 16" width="${size || 14}" height="${size || 14}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+  const ICON = {
+    edit: svg('<path d="M11.3 2.4a1.55 1.55 0 0 1 2.2 2.2L5.4 12.7l-3 .8.8-3z"/>'),
+    trash: svg('<path d="M2.6 4h10.8M6 4V2.6h4V4M12.4 4l-.6 9a1 1 0 0 1-1 .95H5.2a1 1 0 0 1-1-.95L3.6 4M6.5 6.8v4.4M9.5 6.8v4.4"/>'),
+    close: svg('<path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8"/>'),
+    plus: svg('<path d="M8 3.4v9.2M3.4 8h9.2"/>'),
+    grip: '<svg class="ic" viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><circle cx="6" cy="3.6" r="1.15"/><circle cx="10" cy="3.6" r="1.15"/><circle cx="6" cy="8" r="1.15"/><circle cx="10" cy="8" r="1.15"/><circle cx="6" cy="12.4" r="1.15"/><circle cx="10" cy="12.4" r="1.15"/></svg>',
+    clock: svg('<circle cx="8" cy="8" r="5.7"/><path d="M8 4.7V8l2.3 1.4"/>', 12),
+    carry: svg('<path d="M2.9 6.6A5.2 5.2 0 0 1 11.6 4M13.1 9.4A5.2 5.2 0 0 1 4.4 12M11.9 1.9v2.2H9.7M4.1 14.1v-2.2h2.2"/>', 12),
+    chevL: svg('<path d="M10 3.2 5.2 8 10 12.8"/>', 16),
+    chevR: svg('<path d="M6 3.2 10.8 8 6 12.8"/>', 16),
+    chevU: svg('<path d="M3.4 10 8 5.4 12.6 10"/>', 12),
+    chevD: svg('<path d="M3.4 6 8 10.6 12.6 6"/>', 12),
+    arrowR: svg('<path d="M3 8h9M8.6 4.6 12 8l-3.4 3.4"/>', 13),
+  };
   const ALARM_DEFS = [
     { key: 'm1', label: '한 달 전', apply: d => addMonths(d, -1) },
     { key: 'w2', label: '2주 전', apply: d => addDays(d, -14) },
@@ -267,8 +284,8 @@
             <div class="kpi-year">${kpi.year}년 목표${kpi.weight ? ` · 가중치 ${kpi.weight}%` : ''}</div>
           </div>
           <div class="kpi-actions">
-            <button class="icon-btn" data-act="edit-kpi" title="수정">✎</button>
-            <button class="icon-btn" data-act="delete-kpi" title="삭제">🗑</button>
+            <button class="icon-btn" data-act="edit-kpi" title="수정">${ICON.edit}</button>
+            <button class="icon-btn" data-act="delete-kpi" title="삭제">${ICON.trash}</button>
           </div>
         </div>
         ${kpi.description ? `<div class="kpi-desc">${escapeHtml(kpi.description)}</div>` : ''}
@@ -323,23 +340,28 @@
       const canReorder = !t.done;
       const cat = t.category ? taskCategoryById(t.category) : null;
       const catOptions = state.taskCategories.map(c => `<option value="${c.id}" ${t.category === c.id ? 'selected' : ''}>${escapeHtml(c.label)}</option>`).join('');
+      const kpiColor = kpi ? colorForKpi(kpi.id) : null;
       return `
       <li class="task-row ${t.done ? 'done' : ''}" data-id="${t.id}">
-        ${canReorder ? `<span class="drag-handle" draggable="true" title="드래그해서 순서 바꾸기">⠿</span>` : `<span class="drag-handle-spacer"></span>`}
+        ${canReorder ? `<span class="drag-handle" draggable="true" title="드래그해서 순서 바꾸기">${ICON.grip}</span>` : `<span class="drag-handle-spacer"></span>`}
         <input type="checkbox" class="task-checkbox" data-act="toggle-task" ${t.done ? 'checked' : ''}>
-        ${t.priority ? `<span class="priority-badge">#${t.priority}</span>` : ''}
-        ${t.carriedFrom ? `<span class="carry-badge" title="원래 날짜: ${t.carriedFrom}">↻ 이월</span>` : ''}
-        ${t.dueTime ? `<span class="due-time-badge">⏰ ${t.dueTime}까지</span>` : ''}
-        ${t.note ? `<span class="note-indicator" title="${escapeHtml(t.note)}">📝</span>` : ''}
-        <span class="task-title">${escapeHtml(t.title)}</span>
-        <select class="inline-category-select" data-act="inline-category" style="background:${cat ? cat.color : 'var(--surface)'};color:${cat ? '#fff' : 'var(--text-muted)'};border-color:${cat ? 'transparent' : 'var(--border)'}">
+        <div class="task-main">
+          <div class="task-line">
+            ${t.priority ? `<span class="priority-badge">${t.priority}</span>` : ''}
+            <span class="task-title">${escapeHtml(t.title)}</span>
+            ${t.dueTime ? `<span class="meta-badge due" title="목표 시간">${ICON.clock}${t.dueTime}</span>` : ''}
+            ${t.carriedFrom ? `<span class="meta-badge carry" title="원래 날짜: ${t.carriedFrom}">${ICON.carry}이월</span>` : ''}
+            ${kpi ? `<span class="kpi-tag" style="color:${kpiColor};background:${kpiColor}14;border-color:${kpiColor}40">${escapeHtml(kpi.title)}</span>` : ''}
+          </div>
+          ${t.note ? `<div class="task-note">${escapeHtml(t.note)}</div>` : ''}
+        </div>
+        <select class="inline-category-select" data-act="inline-category" style="color:${cat ? cat.color : 'var(--text-muted)'};background:${cat ? cat.color + '14' : 'var(--surface)'};border-color:${cat ? cat.color + '40' : 'var(--border)'}">
           <option value="" ${!t.category ? 'selected' : ''}>구분 없음</option>
           ${catOptions}
         </select>
-        ${kpi ? `<span class="kpi-tag" style="background:${colorForKpi(kpi.id)}">${escapeHtml(kpi.title)}</span>` : ''}
-        ${type === 'monthly' ? `<button class="btn small" data-act="split-suggest" title="주간에 나눠 담기">▸ 주간 추천</button>` : ''}
-        ${type === 'weekly' ? `<button class="btn small" data-act="split-suggest" title="일간에 나눠 담기">▸ 일간 추천</button>` : ''}
-        <button class="icon-btn" data-act="delete-task" title="삭제">🗑</button>
+        ${type === 'monthly' ? `<button class="btn small" data-act="split-suggest" title="주간에 나눠 담기">주간 분배</button>` : ''}
+        ${type === 'weekly' ? `<button class="btn small" data-act="split-suggest" title="일간에 나눠 담기">일간 분배</button>` : ''}
+        <button class="icon-btn" data-act="delete-task" title="삭제">${ICON.trash}</button>
       </li>`;
     }).join('');
   }
@@ -447,7 +469,7 @@
         <div class="undated-actions">
           <button class="btn small" data-act="edit-event">날짜/내용 수정</button>
           <button class="btn small" data-act="add-to-planner">내 일정에 추가</button>
-          <button class="icon-btn" data-act="delete-event" title="삭제">🗑</button>
+          <button class="icon-btn" data-act="delete-event" title="삭제">${ICON.trash}</button>
         </div>
         ${ev.note ? `<div class="undated-note">${escapeHtml(ev.note)}</div>` : ''}
       </div>`;
@@ -501,7 +523,7 @@
         <div class="calendar-cell ${outside ? 'outside' : ''} ${isToday ? 'today' : ''}">
           <div class="calendar-cell-head">
             <span class="calendar-day-num">${cellDate.getDate()}</span>
-            <button class="calendar-add-btn" data-act="add-event-day" data-date="${key}" title="일정 추가">+</button>
+            <button class="calendar-add-btn" data-act="add-event-day" data-date="${key}" title="일정 추가">${ICON.plus}</button>
           </div>
           ${chips}
           ${more}
@@ -669,7 +691,7 @@
               <span class="record-value">${escapeHtml(r.value)}</span>
             </div>
             ${r.note ? `<div class="record-note">${escapeHtml(r.note)}</div>` : ''}
-            <button class="icon-btn" data-act="delete-record" title="삭제">🗑</button>
+            <button class="icon-btn" data-act="delete-record" title="삭제">${ICON.trash}</button>
           </div>`).join('') : `<div class="empty-state">등록된 실적이 없습니다.</div>`}
       </div>
       ${records.length ? `<div class="field-hint" style="margin-bottom:8px">실적을 클릭하면 내용을 수정할 수 있습니다.</div>` : ''}
@@ -749,9 +771,9 @@
             <div class="rubric-chip" style="border-color:${gradeColor(i, N)}">
               <input type="text" class="rubric-chip-input" data-field="grade-name" data-id="${g.id}" value="${escapeHtml(g.name)}">
               <span class="rubric-chip-btns">
-                <button type="button" data-act="grade-up" data-id="${g.id}" ${i === 0 ? 'disabled' : ''}>▲</button>
-                <button type="button" data-act="grade-down" data-id="${g.id}" ${i === grades.length - 1 ? 'disabled' : ''}>▼</button>
-                <button type="button" data-act="grade-remove" data-id="${g.id}">✕</button>
+                <button type="button" data-act="grade-up" data-id="${g.id}" title="앞으로" ${i === 0 ? 'disabled' : ''}>${ICON.chevU}</button>
+                <button type="button" data-act="grade-down" data-id="${g.id}" title="뒤로" ${i === grades.length - 1 ? 'disabled' : ''}>${ICON.chevD}</button>
+                <button type="button" data-act="grade-remove" data-id="${g.id}" title="삭제">${ICON.close}</button>
               </span>
             </div>`).join('')}
         </div>
@@ -781,7 +803,7 @@
                       <textarea class="rubric-cell-text" data-crit="${c.id}" data-grade="${g.id}" placeholder="기준 내용">${escapeHtml(c.cells[g.id] || '')}</textarea>
                       <button type="button" class="rubric-select-btn" data-act="select-cell" data-crit="${c.id}" data-grade="${g.id}" style="background:${gradeColor(i, N)}">${c.selected === g.id ? '선택됨' : '선택'}</button>
                     </td>`).join('')}
-                  <td><button type="button" class="icon-btn" data-act="remove-criterion" data-id="${c.id}" title="삭제">🗑</button></td>
+                  <td><button type="button" class="icon-btn" data-act="remove-criterion" data-id="${c.id}" title="삭제">${ICON.trash}</button></td>
                 </tr>`).join('')}
             </tbody>
           </table>
@@ -1323,7 +1345,7 @@
           <div class="type-manage-row" data-id="${t.id}">
             <input type="color" class="type-color-input" data-id="${t.id}" value="${t.color}">
             <input type="text" class="type-label-input" data-id="${t.id}" value="${escapeHtml(t.label)}">
-            <button type="button" class="icon-btn" data-act="remove-tag" data-id="${t.id}" title="삭제">🗑</button>
+            <button type="button" class="icon-btn" data-act="remove-tag" data-id="${t.id}" title="삭제">${ICON.trash}</button>
           </div>`).join('')}
       </div>
       <button type="button" class="btn small" data-act="add-tag">+ 항목 추가</button>
@@ -1366,7 +1388,8 @@
   // ---------- help ----------
   function helpModalHtml() {
     return `
-      <h2>📘 KPI 플래너 사용 설명서</h2>
+      <h2>사용 안내</h2>
+      <p class="help-intro">각 탭이 어떤 역할을 하는지, 어떤 기능을 쓸 수 있는지 정리했습니다.</p>
       <div class="help-content">
         <section class="help-section">
           <h3>1. 연간 KPI</h3>
@@ -1393,12 +1416,13 @@
           <h3>3. 일간 · 주간 · 월간</h3>
           <p>실제 할 일을 날짜/주/월 단위로 계획하고 체크합니다.</p>
           <ul>
-            <li><b>순서 바꾸기</b>: 항목 왼쪽 ⠿ 손잡이를 누른 채 위아래로 드래그하면 순서가 바뀌어요. 숫자를 직접 정하고 싶으면 항목을 클릭해 우선순위 칸에 숫자를 입력해도 돼요.</li>
+            <li><b>순서 바꾸기</b>: 항목 왼쪽 손잡이(점 여섯 개)를 누른 채 위아래로 드래그하면 순서가 바뀌어요. 숫자를 직접 정하고 싶으면 항목을 클릭해 우선순위 칸에 숫자를 입력해도 돼요.</li>
+            <li><b>메모 · 목표 시간</b>: 항목을 클릭하면 메모와 "몇 시까지 끝낼지" 목표 시간을 넣을 수 있어요. 둘 다 선택 사항이고, 입력하면 목록에 함께 표시돼요.</li>
             <li><b>구분</b>: 각 항목의 구분(예: SHE, 생산 및 업무)을 목록에서 바로 드롭다운으로 바꿀 수 있어요. "구분 관리"로 구분 종류 자체도 자유롭게 추가·이름변경·삭제할 수 있어요.</li>
             <li><b>반복 업무</b>: 할 일을 추가할 때 매일/매주/매월 반복을 선택하면 앞으로의 일정에 자동으로 채워져요.</li>
-            <li><b>자동 이월</b>: 어제까지 완료하지 못한 일간 업무는 오늘로 자동으로 넘어와요. "↻ 이월" 표시로 확인할 수 있어요.</li>
+            <li><b>자동 이월</b>: 어제까지 완료하지 못한 일간 업무는 오늘로 자동으로 넘어와요. "이월" 표시로 확인할 수 있어요.</li>
             <li><b>수정 · 완료 후 이월</b>: 항목을 클릭하면 언제든 수정할 수 있고, 완료된 업무도 클릭해서 날짜를 다른 날로 옮길 수 있어요.</li>
-            <li><b>나눠 담기 추천</b>: 월간 업무의 "▸ 주간 추천", 주간 업무의 "▸ 일간 추천" 버튼을 누르면 규칙 기반으로 각 주/일에 나눠 등록하도록 추천해줘요.</li>
+            <li><b>나눠 담기</b>: 월간 업무의 "주간 분배", 주간 업무의 "일간 분배" 버튼을 누르면 각 주/일에 나눠 등록하도록 추천해줘요.</li>
             <li><b>주간 업무 요약</b>: [주간] 탭에서 "업무 요약 보기"를 누르면 그 주 구분별 완료 현황을 한눈에 볼 수 있어요. (구분을 선택하지 않은 업무는 요약에서 제외돼요)</li>
           </ul>
         </section>
@@ -1474,7 +1498,7 @@
     if (!row) return;
     const ev = state.events.find(x => x.id === row.dataset.id);
     if (!ev) return;
-    const act = e.target.dataset.act;
+    const act = (e.target.closest('[data-act]') || {}).dataset?.act;
     if (act === 'edit-event') {
       openEventModal(ev);
     } else if (act === 'add-to-planner') {
@@ -1493,7 +1517,7 @@
     if (!card) return;
     const kpi = state.kpis.find(k => k.id === card.dataset.id);
     if (!kpi) return;
-    const act = e.target.dataset.act;
+    const act = (e.target.closest('[data-act]') || {}).dataset?.act;
     if (act === 'edit-kpi') {
       openKpiModal(kpi);
     } else if (act === 'delete-kpi') {
@@ -1541,10 +1565,11 @@
       if (!row) return;
       const task = state.tasks.find(t => t.id === row.dataset.id);
       if (!task) return;
-      const act = e.target.dataset.act;
+      const actEl = e.target.closest('[data-act]');
+      const act = actEl ? actEl.dataset.act : undefined;
       if (act === 'inline-category') return;
       if (act === 'toggle-task') {
-        task.done = e.target.checked;
+        task.done = actEl.checked;
         saveState();
         renderPlanner(type);
         renderKpis();
@@ -1571,9 +1596,9 @@
       task.category = e.target.value || null;
       saveState();
       const cat = task.category ? taskCategoryById(task.category) : null;
-      e.target.style.background = cat ? cat.color : 'var(--surface)';
-      e.target.style.color = cat ? '#fff' : 'var(--text-muted)';
-      e.target.style.borderColor = cat ? 'transparent' : 'var(--border)';
+      e.target.style.background = cat ? cat.color + '14' : 'var(--surface)';
+      e.target.style.color = cat ? cat.color : 'var(--text-muted)';
+      e.target.style.borderColor = cat ? cat.color + '40' : 'var(--border)';
       if (type === 'daily') renderWeeklySummaryPanel();
     });
 
