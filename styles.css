@@ -250,6 +250,35 @@ body {
   margin: 0;
 }
 
+.site-footer {
+  margin-top: 56px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.site-footer h2 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-2);
+  margin: 0 0 8px;
+}
+
+.site-footer p {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0 0 10px;
+  max-width: 640px;
+}
+
+.site-footer-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 12.5px;
+  line-height: 1.8;
+  color: var(--text-muted);
+}
+
 /* ============================================================
    Buttons
    ============================================================ */

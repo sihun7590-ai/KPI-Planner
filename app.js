@@ -237,6 +237,13 @@
       'help.l3h': '<b>주간 업무 요약</b>: [주간] 탭에서 "업무 요약 보기"를 누르면 그 주 구분별 완료 현황을 한눈에 볼 수 있어요. (구분을 선택하지 않은 업무는 요약에서 제외돼요)',
       'help.h4': '4. 데이터 보관',
       'help.p4': '입력한 내용은 이 브라우저 안에만 저장됩니다. 서버로 전송되지 않으니 다른 사람이 볼 수 없지만, 브라우저 데이터를 지우면 함께 사라집니다. 기기를 바꿀 때는 새 기기에서 다시 입력해야 합니다.',
+
+      'footer.title': 'KPI 플래너 소개',
+      'footer.desc': 'KPI 플래너는 연간 목표(KPI)와 일정, 일간·주간·월간 할 일을 한 화면에서 관리할 수 있는 무료 웹 플래닝 도구입니다. 설치나 회원가입 없이 브라우저에서 바로 사용할 수 있고, 입력한 데이터는 이 브라우저에만 저장되어 외부로 전송되지 않습니다.',
+      'footer.f1': 'KPI 목표 등록, 가중치·평가등급표 관리',
+      'footer.f2': '여러 날에 걸친 일정도 이어서 표시하는 달력',
+      'footer.f3': '일간·주간·월간 할 일 계획과 드래그 순서 변경',
+      'footer.f4': '실적 기록 및 수정',
     },
     en: {
       'app.title': 'KPI Planner',
@@ -468,6 +475,13 @@
       'help.l3h': '<b>Weekly summary</b>: press "Show weekly summary" in the Weekly tab to see that week\'s completion by category. (Uncategorised tasks are excluded.)',
       'help.h4': '4. Where your data lives',
       'help.p4': 'Everything you enter stays in this browser only. Nothing is sent to a server, so nobody else can see it — but clearing your browser data also clears the planner, and a new device starts empty.',
+
+      'footer.title': 'About KPI Planner',
+      'footer.desc': 'KPI Planner is a free web planning tool for tracking annual goals (KPIs), a schedule, and daily, weekly and monthly to-dos in one place. No install or sign-up needed — everything you enter stays in this browser only and is never sent to a server.',
+      'footer.f1': 'KPI goals with weighting and a customisable rating rubric',
+      'footer.f2': 'A calendar that shows multi-day events continuously',
+      'footer.f3': 'Daily, weekly and monthly task planning with drag-to-reorder',
+      'footer.f4': 'A dated log of results you can edit any time',
     },
   };
 
