@@ -1,13 +1,510 @@
 (() => {
   const STORAGE_KEY = 'kpi-planner-data-v1';
+  const LANG_KEY = 'kpi-planner-lang';
   const PALETTE = ['#3f6f9c', '#a8681f', '#2e7d5b', '#b04a45', '#6b5ca5', '#2c7f8c', '#a4508b', '#6b7280'];
-  const DEFAULT_EVENT_TYPES = [
-    { id: 'construction', label: '공사', color: '#a8681f' },
-    { id: 'other', label: '기타일정', color: '#6b5ca5' },
+
+  // ---------- i18n ----------
+  // 화면에 보이는 모든 문구는 여기 한 곳에 모아 두고 t()로 꺼내 씁니다.
+  // {0}, {1}은 t('key', 값1, 값2) 로 채워집니다.
+  const STRINGS = {
+    ko: {
+      'app.title': 'KPI 플래너',
+      'app.subtitle': '연간 목표 · 일정 · 실행 계획 관리',
+      'app.metaDesc': '연간 KPI 목표, 일정 달력, 일간·주간·월간 할 일을 한 곳에서 관리하는 무료 웹 플래너입니다. 설치도 로그인도 필요 없습니다.',
+      'tab.kpi': '연간 KPI',
+      'tab.calendar': '달력',
+      'tab.daily': '일간',
+      'tab.weekly': '주간',
+      'tab.monthly': '월간',
+      'nav.today': '오늘',
+      'nav.thisWeek': '이번 주',
+      'nav.thisMonth': '이번 달',
+      'btn.help': '사용 안내',
+      'btn.addKpi': '+ 새 KPI',
+      'btn.addEvent': '+ 일정 추가',
+      'btn.addTask': '+ 할 일 추가',
+      'btn.cancel': '취소',
+      'btn.confirm': '확인',
+      'btn.save': '저장',
+      'btn.add': '추가',
+      'btn.create': '등록',
+      'btn.close': '닫기',
+      'btn.delete': '삭제',
+      'btn.edit': '수정',
+      'section.undated': '날짜 미정 · 장기 준비 업무',
+      'lang.aria': '언어 선택',
+
+      'def.construction': '공사',
+      'def.other': '기타일정',
+      'def.work': '생산 및 업무',
+      'def.she': 'SHE',
+      'tag.deleted': '(삭제된 구분)',
+      'tag.newItem': '새 항목',
+
+      'alarm.m1': '한 달 전',
+      'alarm.w2': '2주 전',
+      'alarm.w1': '1주 전',
+      'alarm.d3': '3일 전',
+      'alarm.d1': '1일 전',
+
+      'date.daily': '{0}년 {1}월 {2}일 ({3})',
+      'date.today': ' (오늘)',
+      'date.weeklySame': '{0}년 {1}월 {2}일 ~ {3}일',
+      'date.weeklyCross': '{0}년 {1}월 {2}일 ~ {3}월 {4}일',
+      'date.monthly': '{0}년 {1}월',
+      'date.dayTitle': '{0}년 {1}월 {2}일 ({3})',
+
+      'kpi.summary': 'KPI <b>{0}개</b> · 평균 진척도 <b>{1}%</b>',
+      'kpi.weightSum': ' · 가중치 합계 <b style="color:{0}">{1}%</b>',
+      'kpi.weightHint': ' (100%가 되도록 맞춰보세요)',
+      'kpi.empty': '아직 등록된 KPI가 없습니다. "+ 새 KPI"로 올해 목표를 등록해보세요.',
+      'kpi.yearGoal': '{0}년 목표',
+      'kpi.weightSuffix': ' · 가중치 {0}%',
+      'kpi.linked': '연결된 업무 {0}개 중 {1}개 완료',
+      'kpi.noLinked': '연결된 업무 없음',
+      'kpi.modeManual': '수동 설정',
+      'kpi.modeAuto': '자동 계산',
+      'kpi.records': '실적 관리 ({0}건)',
+      'kpi.rubricManage': '등급표 관리',
+      'kpi.rubricAdd': '+ 평가등급표',
+      'kpi.gradeNone': '평가등급: 아직 선택된 기준이 없음',
+      'kpi.gradeSummary': '종합 등급: ',
+      'kpi.gradeDetail': ' (평가 {0}/{1}건, 평균 {2}점)',
+      'kpi.deleteConfirm': '"{0}" KPI를 삭제할까요? 연결된 업무의 KPI 태그도 함께 해제됩니다.',
+
+      'kpi.modalNew': '새 KPI 등록',
+      'kpi.modalEdit': 'KPI 수정',
+      'kpi.fTitle': '제목',
+      'kpi.fTitlePh': '예: 신규 고객 30% 증가',
+      'kpi.fYear': '목표 연도',
+      'kpi.fWeight': '가중치 (%) — 전체 KPI 중 이 KPI의 비중, 선택사항',
+      'kpi.fWeightPh': '예: 25',
+      'kpi.fDesc': '설명 (선택)',
+      'kpi.fDescPh': '세부 목표나 지표를 적어두세요',
+
+      'rec.title': '실적 기록 - {0}',
+      'rec.empty': '등록된 실적이 없습니다.',
+      'rec.hint': '실적을 클릭하면 내용을 수정할 수 있습니다.',
+      'rec.fDate': '날짜',
+      'rec.fValue': '실적 내용',
+      'rec.fValuePh': '예: 수율 97.2% 달성',
+      'rec.fNote': '메모 (선택)',
+      'rec.fNotePh': '세부 내용',
+      'rec.cancelEdit': '수정 취소',
+      'rec.saveEdit': '실적 수정 저장',
+      'rec.addBtn': '실적 추가',
+      'rec.deleteConfirm': '이 실적 기록을 삭제할까요?',
+
+      'rub.title': '평가 등급표 - {0}',
+      'rub.gradesHead': '등급 (좋음 → 나쁨 순, 이름은 자유롭게 바꿀 수 있어요)',
+      'rub.gradeUp': '앞으로',
+      'rub.gradeDown': '뒤로',
+      'rub.addGrade': '+ 등급 추가',
+      'rub.newGrade': '새 등급',
+      'rub.critHead': '평가 기준 (행마다 등급 하나를 클릭해서 선택하세요)',
+      'rub.colCrit': '기준',
+      'rub.weightPh': '배점%',
+      'rub.cellPh': '기준 내용',
+      'rub.selected': '선택됨',
+      'rub.select': '선택',
+      'rub.addCrit': '+ 평가 기준 추가',
+      'rub.newCrit': '새 평가 기준',
+      'rub.critDefault': '평가 기준 1',
+      'rub.weightVsKpi': '평가 기준 배점 합계: {0}% / KPI 가중치: {1}%',
+      'rub.weightMatch': ' ✓',
+      'rub.weightMismatch': ' — 합계를 KPI 가중치와 맞추면 더 정확해요',
+      'rub.weightOnly': '평가 기준 배점 합계: {0}% (KPI 수정에서 가중치를 설정하면 목표 합계를 알려드려요)',
+      'rub.resultDetail': '평균 {0}점 · 평가 {1}/{2}개 기준 선택됨',
+      'rub.resultNone': '아직 선택된 평가 기준이 없습니다.',
+      'rub.minGrade': '등급은 최소 1개 이상 있어야 합니다.',
+      'rub.deleteGrade': '이 등급을 삭제할까요?',
+      'rub.deleteCrit': '이 평가 기준을 삭제할까요?',
+
+      'task.empty': '등록된 할 일이 없습니다.',
+      'task.summary': '총 <b>{0}개</b> · 완료 <b>{1}개</b> ({2}%)',
+      'task.dragTip': '드래그해서 순서 바꾸기',
+      'task.dueTitle': '목표 시간',
+      'task.carryTitle': '원래 날짜: {0}',
+      'task.carry': '이월',
+      'task.noCategory': '구분 없음',
+      'task.splitWeekly': '주간 분배',
+      'task.splitWeeklyTip': '주간에 나눠 담기',
+      'task.splitDaily': '일간 분배',
+      'task.splitDailyTip': '일간에 나눠 담기',
+      'task.modalEdit': '업무 수정',
+      'task.modalNew': '{0} 할 일 추가',
+      'task.fTitle': '제목',
+      'task.fTitlePh': '할 일을 입력하세요',
+      'task.fKpi': '연결할 KPI (선택)',
+      'task.fKpiNone': '연결 안 함',
+      'task.fNote': '메모 (선택)',
+      'task.fNotePh': '세부 내용이나 참고사항을 적어두세요',
+      'task.fDue': '목표 시간 (선택, ~까지 완료)',
+      'task.fPriority': '우선순위 (숫자, 작을수록 먼저 표시 · 목록에서 드래그로도 바꿀 수 있어요)',
+      'task.fCategory': '구분 (선택)',
+      'task.fCategoryNone': '선택 안 함',
+      'task.manageCategories': '구분 관리',
+      'task.categoryHint': '구분을 선택하지 않으면 금요일 주간 업무 요약에는 표시되지 않습니다.',
+      'task.fDate': '날짜',
+      'task.fWeek': '주 (해당 주의 아무 날짜나 선택)',
+      'task.fMonth': '월',
+      'task.fRecurrence': '반복',
+      'task.recNone': '반복 없음',
+      'task.recDaily': '매일 반복 (30일)',
+      'task.recWeeklySameDay': '매주 반복 (같은 요일, 12주)',
+      'task.recWeekly': '매주 반복 (12주)',
+      'task.recMonthly': '매월 반복 (6개월)',
+      'task.addTo': '{0}에 추가됩니다.',
+      'task.deleteConfirm': '이 업무를 삭제할까요?',
+
+      'split.title': '{0}에 나눠 담기 추천',
+      'split.hint': '"{0}"을(를) 아래에 나눠 등록합니다. (규칙 기반 자동 분배이며, 실제 업무량을 분석한 결과는 아닙니다. 필요한 항목만 선택하세요.)',
+      'split.weekOption': '{0}주차 ({1})',
+      'split.dayOption': '{0}요일 ({1})',
+
+      'sum.show': '업무 요약 보기',
+      'sum.hide': '업무 요약 닫기',
+      'sum.head': '주간 업무 요약',
+      'sum.range': '({0}, 평일 기준 · 구분 미선택 업무는 제외)',
+      'sum.count': '{0}/{1}건 완료',
+      'sum.empty': '완료된 업무가 없습니다.',
+      'sum.pending': '미완료 {0}건',
+
+      'cal.monthCount': '이번 달 일정 <b>{0}건</b>',
+      'cal.more': '+{0}개',
+      'cal.addEventTip': '일정 추가',
+      'cal.alarmTitle': '오늘의 일정 알림 ({0}건)',
+      'cal.alarmLead': '{0} 알림',
+      'cal.alarmScheduled': ' 예정 · ',
+      'cal.undatedEmpty': '등록된 미정 업무가 없습니다.',
+      'cal.editEvent': '날짜/내용 수정',
+      'cal.addToPlanner': '내 일정에 추가',
+      'cal.deleteEventConfirm': '"{0}" 항목을 삭제할까요?',
+      'cal.dayTitleSuffix': ' 일정',
+
+      'ev.modalNew': '새 일정 추가',
+      'ev.modalEdit': '일정 수정',
+      'ev.fTitle': '제목',
+      'ev.fTitlePh': '예: OO동 소방설비 공사',
+      'ev.fType': '구분',
+      'ev.manageTypes': '구분 관리',
+      'ev.undated': '날짜 미정 (장기 준비 업무로 등록)',
+      'ev.fStartDate': '시작일',
+      'ev.fEndDate': '종료일 (선택, 여러 날 지속되는 일정만)',
+      'ev.fStartTime': '시작 시간 (선택)',
+      'ev.fEndTime': '종료 시간 (선택)',
+      'ev.fNote': '메모 (선택)',
+      'ev.fNotePh': '세부 내용을 적어두세요',
+      'ev.alarmsOn': '알람 사용',
+      'ev.deleteConfirm': '"{0}" 일정을 삭제할까요?',
+      'ev.needStart': '시작일을 입력하거나 "날짜 미정"을 선택하세요.',
+      'ev.endBeforeStart': '종료일은 시작일보다 빠를 수 없습니다.',
+
+      'atp.title': '내 일정에 추가',
+      'atp.hint': '"{0}"을(를) 추가할 위치를 선택하세요.',
+      'atp.where': '추가할 위치',
+
+      'tag.eventTypes': '일정 구분 관리',
+      'tag.taskCategories': '구분(카테고리) 관리',
+      'tag.addItem': '+ 항목 추가',
+      'tag.minOne': '최소 1개 이상 있어야 합니다.',
+      'tag.deleteConfirm': '이 항목을 삭제할까요?',
+
+      'help.title': '사용 안내',
+      'help.intro': '각 탭이 어떤 역할을 하는지, 어떤 기능을 쓸 수 있는지 정리했습니다.',
+      'help.h1': '1. 연간 KPI',
+      'help.p1': '올해 달성하고 싶은 목표를 KPI로 등록합니다. "+ 새 KPI"를 눌러 제목, 목표 연도, 설명을 입력하세요.',
+      'help.l1a': '<b>진행률</b>: KPI에 업무를 연결하면 완료한 업무 비율로 자동 계산돼요. "수동 설정"으로 바꾸면 슬라이더로 직접 % 조정도 가능해요.',
+      'help.l1b': '<b>가중치(%)</b>: 여러 KPI 중 이 KPI가 차지하는 비중을 정할 수 있어요. 전체 KPI 가중치 합이 100%가 되도록 맞추면 좋아요.',
+      'help.l1c': '<b>실적 관리</b>: 실제로 달성한 실적을 날짜별로 기록해두는 곳이에요. 기록을 클릭하면 내용을 수정할 수 있어요.',
+      'help.l1d': '<b>평가등급표</b>: S·A·B·C처럼 등급 이름을 자유롭게 정하고, 평가 기준마다 등급을 선택해 종합 등급을 계산해요. 평가 기준마다 배점(%)을 입력하면 KPI 가중치에 맞춰 더 정교하게 계산돼요.',
+      'help.h2': '2. 달력',
+      'help.p2': '공사, 기타일정 등 원하는 구분을 직접 만들어 일정을 등록하고 관리합니다.',
+      'help.l2a': '<b>구분 관리</b>: 일정 추가 화면의 "구분 관리" 버튼으로 구분 이름과 색상을 자유롭게 추가·수정·삭제할 수 있어요.',
+      'help.l2b': '<b>기간이 있는 일정</b>: 시작일과 종료일을 다르게 지정하면 여러 날에 걸쳐 달력에 이어서 표시돼요. 시작·종료 시간도 선택적으로 넣을 수 있어요.',
+      'help.l2c': '<b>알림</b>: 한 달 전 ~ 하루 전까지 원하는 시점에 알림을 받을 수 있고, 알림별로 켜고 끌 수 있어요.',
+      'help.l2d': '<b>날짜 미정</b>: 아직 날짜를 못 정한 장기 준비 업무는 "날짜 미정"으로 등록하면 [일간] 탭 아래쪽 목록에 모아서 보여줘요.',
+      'help.l2e': '일정의 "내 일정에 추가" 버튼으로 일간·주간·월간 할 일로 바로 옮길 수 있어요.',
+      'help.h3': '3. 일간 · 주간 · 월간',
+      'help.p3': '실제 할 일을 날짜/주/월 단위로 계획하고 체크합니다.',
+      'help.l3a': '<b>순서 바꾸기</b>: 항목 왼쪽 손잡이(점 여섯 개)를 누른 채 위아래로 드래그하면 순서가 바뀌어요. 숫자를 직접 정하고 싶으면 항목을 클릭해 우선순위 칸에 숫자를 입력해도 돼요.',
+      'help.l3b': '<b>메모 · 목표 시간</b>: 항목을 클릭하면 메모와 "몇 시까지 끝낼지" 목표 시간을 넣을 수 있어요. 둘 다 선택 사항이고, 입력하면 목록에 함께 표시돼요.',
+      'help.l3c': '<b>구분</b>: 각 항목의 구분(예: SHE, 생산 및 업무)을 목록에서 바로 드롭다운으로 바꿀 수 있어요. "구분 관리"로 구분 종류 자체도 자유롭게 추가·이름변경·삭제할 수 있어요.',
+      'help.l3d': '<b>반복 업무</b>: 할 일을 추가할 때 매일/매주/매월 반복을 선택하면 앞으로의 일정에 자동으로 채워져요.',
+      'help.l3e': '<b>자동 이월</b>: 어제까지 완료하지 못한 일간 업무는 오늘로 자동으로 넘어와요. "이월" 표시로 확인할 수 있어요.',
+      'help.l3f': '<b>수정 · 완료 후 이월</b>: 항목을 클릭하면 언제든 수정할 수 있고, 완료된 업무도 클릭해서 날짜를 다른 날로 옮길 수 있어요.',
+      'help.l3g': '<b>나눠 담기</b>: 월간 업무의 "주간 분배", 주간 업무의 "일간 분배" 버튼을 누르면 각 주/일에 나눠 등록하도록 추천해줘요.',
+      'help.l3h': '<b>주간 업무 요약</b>: [주간] 탭에서 "업무 요약 보기"를 누르면 그 주 구분별 완료 현황을 한눈에 볼 수 있어요. (구분을 선택하지 않은 업무는 요약에서 제외돼요)',
+      'help.h4': '4. 데이터 보관',
+      'help.p4': '입력한 내용은 이 브라우저 안에만 저장됩니다. 서버로 전송되지 않으니 다른 사람이 볼 수 없지만, 브라우저 데이터를 지우면 함께 사라집니다. 기기를 바꿀 때는 새 기기에서 다시 입력해야 합니다.',
+    },
+    en: {
+      'app.title': 'KPI Planner',
+      'app.subtitle': 'Annual goals · schedule · execution planning',
+      'app.metaDesc': 'A free web planner for annual KPI goals, a schedule calendar, and daily, weekly and monthly to-dos. No install, no sign-up.',
+      'tab.kpi': 'Annual KPIs',
+      'tab.calendar': 'Calendar',
+      'tab.daily': 'Daily',
+      'tab.weekly': 'Weekly',
+      'tab.monthly': 'Monthly',
+      'nav.today': 'Today',
+      'nav.thisWeek': 'This week',
+      'nav.thisMonth': 'This month',
+      'btn.help': 'Guide',
+      'btn.addKpi': '+ New KPI',
+      'btn.addEvent': '+ Add event',
+      'btn.addTask': '+ Add task',
+      'btn.cancel': 'Cancel',
+      'btn.confirm': 'OK',
+      'btn.save': 'Save',
+      'btn.add': 'Add',
+      'btn.create': 'Create',
+      'btn.close': 'Close',
+      'btn.delete': 'Delete',
+      'btn.edit': 'Edit',
+      'section.undated': 'Undated · long-term preparation',
+      'lang.aria': 'Language',
+
+      'def.construction': 'Construction',
+      'def.other': 'Other',
+      'def.work': 'Production & work',
+      'def.she': 'SHE',
+      'tag.deleted': '(deleted category)',
+      'tag.newItem': 'New item',
+
+      'alarm.m1': '1 month before',
+      'alarm.w2': '2 weeks before',
+      'alarm.w1': '1 week before',
+      'alarm.d3': '3 days before',
+      'alarm.d1': '1 day before',
+
+      'date.daily': '{3}, {1} {2}, {0}',
+      'date.today': ' (Today)',
+      'date.weeklySame': '{1} {2} – {3}, {0}',
+      'date.weeklyCross': '{1} {2} – {3} {4}, {0}',
+      'date.monthly': '{1} {0}',
+      'date.dayTitle': '{3}, {1} {2}, {0}',
+
+      'kpi.summary': '<b>{0}</b> KPIs · average progress <b>{1}%</b>',
+      'kpi.weightSum': ' · weight total <b style="color:{0}">{1}%</b>',
+      'kpi.weightHint': ' (aim for 100%)',
+      'kpi.empty': 'No KPIs yet. Use "+ New KPI" to add this year\'s goals.',
+      'kpi.yearGoal': '{0} goal',
+      'kpi.weightSuffix': ' · weight {0}%',
+      'kpi.linked': '{1} of {0} linked tasks done',
+      'kpi.noLinked': 'No linked tasks',
+      'kpi.modeManual': 'Manual',
+      'kpi.modeAuto': 'Automatic',
+      'kpi.records': 'Results ({0})',
+      'kpi.rubricManage': 'Edit rubric',
+      'kpi.rubricAdd': '+ Rating rubric',
+      'kpi.gradeNone': 'Rating: no criteria selected yet',
+      'kpi.gradeSummary': 'Overall rating: ',
+      'kpi.gradeDetail': ' ({0}/{1} criteria rated, average {2})',
+      'kpi.deleteConfirm': 'Delete the KPI "{0}"? Linked tasks will lose their KPI tag.',
+
+      'kpi.modalNew': 'New KPI',
+      'kpi.modalEdit': 'Edit KPI',
+      'kpi.fTitle': 'Title',
+      'kpi.fTitlePh': 'e.g. Grow new customers by 30%',
+      'kpi.fYear': 'Target year',
+      'kpi.fWeight': 'Weight (%) — this KPI\'s share of the total, optional',
+      'kpi.fWeightPh': 'e.g. 25',
+      'kpi.fDesc': 'Description (optional)',
+      'kpi.fDescPh': 'Note the detailed target or metric',
+
+      'rec.title': 'Results — {0}',
+      'rec.empty': 'No results recorded yet.',
+      'rec.hint': 'Click a result to edit it.',
+      'rec.fDate': 'Date',
+      'rec.fValue': 'Result',
+      'rec.fValuePh': 'e.g. Yield reached 97.2%',
+      'rec.fNote': 'Note (optional)',
+      'rec.fNotePh': 'Details',
+      'rec.cancelEdit': 'Cancel edit',
+      'rec.saveEdit': 'Save changes',
+      'rec.addBtn': 'Add result',
+      'rec.deleteConfirm': 'Delete this result?',
+
+      'rub.title': 'Rating rubric — {0}',
+      'rub.gradesHead': 'Grades (best → worst; rename them freely)',
+      'rub.gradeUp': 'Move up',
+      'rub.gradeDown': 'Move down',
+      'rub.addGrade': '+ Add grade',
+      'rub.newGrade': 'New grade',
+      'rub.critHead': 'Criteria (click one grade per row)',
+      'rub.colCrit': 'Criterion',
+      'rub.weightPh': 'Weight %',
+      'rub.cellPh': 'Describe this level',
+      'rub.selected': 'Selected',
+      'rub.select': 'Select',
+      'rub.addCrit': '+ Add criterion',
+      'rub.newCrit': 'New criterion',
+      'rub.critDefault': 'Criterion 1',
+      'rub.weightVsKpi': 'Criteria weight total: {0}% / KPI weight: {1}%',
+      'rub.weightMatch': ' ✓',
+      'rub.weightMismatch': ' — matching the KPI weight gives a more accurate score',
+      'rub.weightOnly': 'Criteria weight total: {0}% (set a KPI weight to see the target total)',
+      'rub.resultDetail': 'Average {0} · {1}/{2} criteria selected',
+      'rub.resultNone': 'No criteria selected yet.',
+      'rub.minGrade': 'At least one grade is required.',
+      'rub.deleteGrade': 'Delete this grade?',
+      'rub.deleteCrit': 'Delete this criterion?',
+
+      'task.empty': 'No tasks yet.',
+      'task.summary': '<b>{0}</b> total · <b>{1}</b> done ({2}%)',
+      'task.dragTip': 'Drag to reorder',
+      'task.dueTitle': 'Finish by',
+      'task.carryTitle': 'Originally: {0}',
+      'task.carry': 'Carried over',
+      'task.noCategory': 'No category',
+      'task.splitWeekly': 'Split by week',
+      'task.splitWeeklyTip': 'Spread across weeks',
+      'task.splitDaily': 'Split by day',
+      'task.splitDailyTip': 'Spread across days',
+      'task.modalEdit': 'Edit task',
+      'task.modalNew': 'Add {0} task',
+      'task.fTitle': 'Title',
+      'task.fTitlePh': 'What needs to be done?',
+      'task.fKpi': 'Linked KPI (optional)',
+      'task.fKpiNone': 'Not linked',
+      'task.fNote': 'Note (optional)',
+      'task.fNotePh': 'Details or anything worth remembering',
+      'task.fDue': 'Finish by (optional)',
+      'task.fPriority': 'Priority (lower shows first · you can also drag rows in the list)',
+      'task.fCategory': 'Category (optional)',
+      'task.fCategoryNone': 'None',
+      'task.manageCategories': 'Manage categories',
+      'task.categoryHint': 'Tasks without a category are left out of the weekly summary.',
+      'task.fDate': 'Date',
+      'task.fWeek': 'Week (pick any date in that week)',
+      'task.fMonth': 'Month',
+      'task.fRecurrence': 'Repeat',
+      'task.recNone': 'No repeat',
+      'task.recDaily': 'Every day (30 days)',
+      'task.recWeeklySameDay': 'Every week, same weekday (12 weeks)',
+      'task.recWeekly': 'Every week (12 weeks)',
+      'task.recMonthly': 'Every month (6 months)',
+      'task.addTo': 'Will be added to {0}.',
+      'task.deleteConfirm': 'Delete this task?',
+
+      'split.title': 'Suggested split into {0}',
+      'split.hint': '"{0}" will be added to the entries you pick below. (This is a simple rule-based split, not an analysis of actual workload.)',
+      'split.weekOption': 'Week {0} ({1})',
+      'split.dayOption': '{0} ({1})',
+
+      'sum.show': 'Show weekly summary',
+      'sum.hide': 'Hide weekly summary',
+      'sum.head': 'Weekly summary',
+      'sum.range': '({0}, weekdays only · uncategorised tasks excluded)',
+      'sum.count': '{0}/{1} done',
+      'sum.empty': 'Nothing completed yet.',
+      'sum.pending': '{0} still open',
+
+      'cal.monthCount': '<b>{0}</b> events this month',
+      'cal.more': '+{0} more',
+      'cal.addEventTip': 'Add event',
+      'cal.alarmTitle': 'Reminders for today ({0})',
+      'cal.alarmLead': '{0}',
+      'cal.alarmScheduled': ' · ',
+      'cal.undatedEmpty': 'Nothing undated yet.',
+      'cal.editEvent': 'Edit date/details',
+      'cal.addToPlanner': 'Add to my plan',
+      'cal.deleteEventConfirm': 'Delete "{0}"?',
+      'cal.dayTitleSuffix': '',
+
+      'ev.modalNew': 'New event',
+      'ev.modalEdit': 'Edit event',
+      'ev.fTitle': 'Title',
+      'ev.fTitlePh': 'e.g. Fire system work, Building A',
+      'ev.fType': 'Category',
+      'ev.manageTypes': 'Manage categories',
+      'ev.undated': 'Date not decided (keep as long-term prep)',
+      'ev.fStartDate': 'Start date',
+      'ev.fEndDate': 'End date (optional, for multi-day events)',
+      'ev.fStartTime': 'Start time (optional)',
+      'ev.fEndTime': 'End time (optional)',
+      'ev.fNote': 'Note (optional)',
+      'ev.fNotePh': 'Details',
+      'ev.alarmsOn': 'Reminders on',
+      'ev.deleteConfirm': 'Delete the event "{0}"?',
+      'ev.needStart': 'Enter a start date, or tick "Date not decided".',
+      'ev.endBeforeStart': 'The end date cannot be before the start date.',
+
+      'atp.title': 'Add to my plan',
+      'atp.hint': 'Choose where to add "{0}".',
+      'atp.where': 'Add to',
+
+      'tag.eventTypes': 'Event categories',
+      'tag.taskCategories': 'Task categories',
+      'tag.addItem': '+ Add item',
+      'tag.minOne': 'At least one item is required.',
+      'tag.deleteConfirm': 'Delete this item?',
+
+      'help.title': 'Guide',
+      'help.intro': 'What each tab is for, and what you can do in it.',
+      'help.h1': '1. Annual KPIs',
+      'help.p1': 'Register the goals you want to hit this year. Press "+ New KPI" and fill in a title, target year and description.',
+      'help.l1a': '<b>Progress</b>: link tasks to a KPI and progress is calculated from how many are done. Switch to "Manual" to set the percentage yourself with a slider.',
+      'help.l1b': '<b>Weight (%)</b>: how much this KPI counts relative to the others. Aim for 100% across all KPIs.',
+      'help.l1c': '<b>Results</b>: a dated log of what you actually achieved. Click an entry to edit it.',
+      'help.l1d': '<b>Rating rubric</b>: name your grades however you like (S·A·B·C, etc.), pick a grade per criterion, and the overall rating is calculated for you. Give each criterion a weight (%) for a more precise score.',
+      'help.h2': '2. Calendar',
+      'help.p2': 'Create your own categories and register events against them.',
+      'help.l2a': '<b>Categories</b>: the "Manage categories" button in the event form lets you add, rename, recolour and delete categories.',
+      'help.l2b': '<b>Multi-day events</b>: give an event a different end date and it will run continuously across the calendar. Start and end times are optional.',
+      'help.l2c': '<b>Reminders</b>: get a heads-up anywhere from a month to a day before, and switch each one on or off.',
+      'help.l2d': '<b>Undated</b>: work with no date yet can be filed as "Date not decided" and appears in a list at the bottom of the Daily tab.',
+      'help.l2e': 'The "Add to my plan" button moves an event straight into your daily, weekly or monthly list.',
+      'help.h3': '3. Daily · Weekly · Monthly',
+      'help.p3': 'Plan and tick off the actual work, by day, week or month.',
+      'help.l3a': '<b>Reordering</b>: grab the handle (six dots) on the left of a row and drag it up or down. You can also click a row and type a priority number.',
+      'help.l3b': '<b>Note and finish-by time</b>: click a row to add a note and a target time. Both are optional and show up in the list once filled in.',
+      'help.l3c': '<b>Category</b>: change a row\'s category straight from the dropdown in the list. "Manage categories" lets you add, rename and delete the categories themselves.',
+      'help.l3d': '<b>Repeating work</b>: choose a daily, weekly or monthly repeat when adding a task and future entries are filled in automatically.',
+      'help.l3e': '<b>Automatic carry-over</b>: unfinished daily tasks roll forward to today and are marked "Carried over".',
+      'help.l3f': '<b>Editing and rescheduling</b>: click any row to edit it — including completed ones, which you can move to another date.',
+      'help.l3g': '<b>Splitting</b>: "Split by week" on a monthly task and "Split by day" on a weekly task suggest how to spread the work out.',
+      'help.l3h': '<b>Weekly summary</b>: press "Show weekly summary" in the Weekly tab to see that week\'s completion by category. (Uncategorised tasks are excluded.)',
+      'help.h4': '4. Where your data lives',
+      'help.p4': 'Everything you enter stays in this browser only. Nothing is sent to a server, so nobody else can see it — but clearing your browser data also clears the planner, and a new device starts empty.',
+    },
+  };
+
+  let lang = localStorage.getItem(LANG_KEY);
+  if (lang !== 'ko' && lang !== 'en') {
+    lang = (navigator.language || 'en').toLowerCase().startsWith('ko') ? 'ko' : 'en';
+  }
+
+  function t(key) {
+    const table = STRINGS[lang] || STRINGS.en;
+    let s = table[key];
+    if (s == null) s = STRINGS.en[key];
+    if (s == null) return key;
+    for (let i = 1; i < arguments.length; i++) {
+      s = s.split('{' + (i - 1) + '}').join(String(arguments[i]));
+    }
+    return s;
+  }
+
+  const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const MONTHS_EN_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const WEEKDAYS = {
+    ko: { sun: ['일', '월', '화', '수', '목', '금', '토'], mon: ['월', '화', '수', '목', '금', '토', '일'] },
+    en: { sun: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], mon: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
+  };
+  // 요일 이름 (0=일요일). 달력 헤더는 월요일 시작이라 별도 배열을 씁니다.
+  const wd = i => WEEKDAYS[lang].sun[i];
+  const monthName = m => (lang === 'ko' ? m + 1 : MONTHS_EN[m]);
+  const monthNameShort = m => (lang === 'ko' ? m + 1 : MONTHS_EN_SHORT[m]);
+
+  const DEFAULT_EVENT_TYPES = () => [
+    { id: 'construction', label: t('def.construction'), color: '#a8681f' },
+    { id: 'other', label: t('def.other'), color: '#6b5ca5' },
   ];
-  const DEFAULT_TASK_CATEGORIES = [
-    { id: 'work', label: '생산 및 업무', color: '#3f6f9c' },
-    { id: 'she', label: 'SHE', color: '#2c7f8c' },
+  const DEFAULT_TASK_CATEGORIES = () => [
+    { id: 'work', label: t('def.work'), color: '#3f6f9c' },
+    { id: 'she', label: t('def.she'), color: '#2c7f8c' },
   ];
 
   // 인라인 SVG 아이콘 (이모지 대신 사용해 어느 기기에서나 동일하게 보이도록)
@@ -27,12 +524,13 @@
     arrowR: svg('<path d="M3 8h9M8.6 4.6 12 8l-3.4 3.4"/>', 13),
   };
   const ALARM_DEFS = [
-    { key: 'm1', label: '한 달 전', apply: d => addMonths(d, -1) },
-    { key: 'w2', label: '2주 전', apply: d => addDays(d, -14) },
-    { key: 'w1', label: '1주 전', apply: d => addDays(d, -7) },
-    { key: 'd3', label: '3일 전', apply: d => addDays(d, -3) },
-    { key: 'd1', label: '1일 전', apply: d => addDays(d, -1) },
+    { key: 'm1', apply: d => addMonths(d, -1) },
+    { key: 'w2', apply: d => addDays(d, -14) },
+    { key: 'w1', apply: d => addDays(d, -7) },
+    { key: 'd3', apply: d => addDays(d, -3) },
+    { key: 'd1', apply: d => addDays(d, -1) },
   ];
+  const alarmLabel = def => t('alarm.' + def.key);
   const state = loadState();
   const pointers = {
     daily: new Date(),
@@ -47,8 +545,8 @@
       const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (raw && Array.isArray(raw.kpis) && Array.isArray(raw.tasks)) {
         if (!Array.isArray(raw.events)) raw.events = [];
-        if (!Array.isArray(raw.eventTypes) || raw.eventTypes.length === 0) raw.eventTypes = DEFAULT_EVENT_TYPES.map(t => ({ ...t }));
-        if (!Array.isArray(raw.taskCategories) || raw.taskCategories.length === 0) raw.taskCategories = DEFAULT_TASK_CATEGORIES.map(c => ({ ...c }));
+        if (!Array.isArray(raw.eventTypes) || raw.eventTypes.length === 0) raw.eventTypes = DEFAULT_EVENT_TYPES();
+        if (!Array.isArray(raw.taskCategories) || raw.taskCategories.length === 0) raw.taskCategories = DEFAULT_TASK_CATEGORIES();
         raw.events.forEach(ev => {
           if (!ev.startDate) {
             ev.startDate = ev.date || null;
@@ -61,7 +559,7 @@
         return raw;
       }
     } catch (e) { /* ignore */ }
-    return { kpis: [], tasks: [], events: [], eventTypes: DEFAULT_EVENT_TYPES.map(t => ({ ...t })), taskCategories: DEFAULT_TASK_CATEGORIES.map(c => ({ ...c })) };
+    return { kpis: [], tasks: [], events: [], eventTypes: DEFAULT_EVENT_TYPES(), taskCategories: DEFAULT_TASK_CATEGORIES() };
   }
 
   function saveState() {
@@ -73,7 +571,7 @@
   }
 
   function eventTypeById(id) {
-    return state.eventTypes.find(t => t.id === id) || { id, label: '(삭제된 구분)', color: '#8a8f98' };
+    return state.eventTypes.find(x => x.id === id) || { id, label: t('tag.deleted'), color: '#8a8f98' };
   }
   function taskCategoryById(id) {
     return state.taskCategories.find(c => c.id === id) || null;
@@ -105,8 +603,6 @@
   }
   const addDays = (d, n) => { const nd = new Date(d); nd.setDate(nd.getDate() + n); return nd; };
   const addMonths = (d, n) => { const nd = new Date(d); nd.setMonth(nd.getMonth() + n); return nd; };
-  const WEEKDAY_KR = ['일', '월', '화', '수', '목', '금', '토'];
-  const WEEKDAY_KR_MON = ['월', '화', '수', '목', '금', '토', '일'];
   function monthMatrix(d) {
     const firstOfMonth = new Date(d.getFullYear(), d.getMonth(), 1);
     const start = mondayOf(firstOfMonth);
@@ -116,18 +612,18 @@
   }
 
   function fmtDaily(d) {
-    const today = dateStr(new Date()) === dateStr(d) ? ' (오늘)' : '';
-    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAY_KR[d.getDay()]})${today}`;
+    const today = dateStr(new Date()) === dateStr(d) ? t('date.today') : '';
+    return t('date.daily', d.getFullYear(), monthName(d.getMonth()), d.getDate(), wd(d.getDay())) + today;
   }
   function fmtWeekly(mon) {
     const sun = addDays(mon, 6);
     const sameMonth = mon.getMonth() === sun.getMonth();
-    const left = `${mon.getMonth() + 1}월 ${mon.getDate()}일`;
-    const right = sameMonth ? `${sun.getDate()}일` : `${sun.getMonth() + 1}월 ${sun.getDate()}일`;
-    return `${mon.getFullYear()}년 ${left} ~ ${right}`;
+    return sameMonth
+      ? t('date.weeklySame', mon.getFullYear(), monthName(mon.getMonth()), mon.getDate(), sun.getDate())
+      : t('date.weeklyCross', mon.getFullYear(), monthName(mon.getMonth()), mon.getDate(), monthName(sun.getMonth()), sun.getDate());
   }
   function fmtMonthly(d) {
-    return `${d.getFullYear()}년 ${d.getMonth() + 1}월`;
+    return t('date.monthly', d.getFullYear(), monthName(d.getMonth()));
   }
 
   // ---------- overdue daily task carry-over ----------
@@ -160,7 +656,7 @@
   function defaultRubric() {
     const gradeNames = ['U', 'N', 'M', 'E', 'O'];
     const grades = gradeNames.map(n => ({ id: uid(), name: n }));
-    const criteria = [{ id: uid(), label: '평가 기준 1', cells: {}, selected: null, weight: null }];
+    const criteria = [{ id: uid(), label: t('rub.critDefault'), cells: {}, selected: null, weight: null }];
     return { grades, criteria };
   }
 
@@ -250,42 +746,40 @@
     const anyWeight = state.kpis.some(k => k.weight);
     const weightOk = Math.abs(weightSum - 100) < 0.01;
     const weightHtml = anyWeight
-      ? ` · 가중치 합계 <b style="color:${weightOk ? 'var(--success)' : 'var(--warn)'}">${weightSum}%</b>${weightOk ? '' : ' (100%가 되도록 맞춰보세요)'}`
+      ? t('kpi.weightSum', weightOk ? 'var(--success)' : 'var(--warn)', weightSum) + (weightOk ? '' : t('kpi.weightHint'))
       : '';
-    el.innerHTML = `KPI <b>${state.kpis.length}개</b> · 평균 진척도 <b>${avg}%</b>${weightHtml}`;
+    el.innerHTML = t('kpi.summary', state.kpis.length, avg) + weightHtml;
   }
 
   function kpiRubricSummaryHtml(kpi) {
     const res = computeRubricResult(kpi.rubric);
-    if (!res || !res.grade) return `<div class="kpi-linked-stat">평가등급: 아직 선택된 기준이 없음</div>`;
-    return `<div class="kpi-linked-stat">종합 등급: <span class="rubric-grade-badge" style="background:${res.color}">${escapeHtml(res.grade.name)}</span> (평가 ${res.count}/${res.total}건, 평균 ${res.avg.toFixed(1)}점)</div>`;
+    if (!res || !res.grade) return `<div class="kpi-linked-stat">${t('kpi.gradeNone')}</div>`;
+    return `<div class="kpi-linked-stat">${t('kpi.gradeSummary')}<span class="rubric-grade-badge" style="background:${res.color}">${escapeHtml(res.grade.name)}</span>${t('kpi.gradeDetail', res.count, res.total, res.avg.toFixed(1))}</div>`;
   }
 
   function renderKpis() {
     renderKpiSummary();
     const list = document.getElementById('kpi-list');
     if (state.kpis.length === 0) {
-      list.innerHTML = `<div class="empty-state" style="grid-column:1/-1">아직 등록된 KPI가 없습니다. "+ 새 KPI"로 올해 목표를 등록해보세요.</div>`;
+      list.innerHTML = `<div class="empty-state" style="grid-column:1/-1">${t('kpi.empty')}</div>`;
       return;
     }
     list.innerHTML = state.kpis.map(kpi => {
       const pct = kpiProgress(kpi);
       const linked = linkedTasks(kpi.id);
-      const done = linked.filter(t => t.done).length;
-      const linkedInfo = linked.length
-        ? `연결된 업무 ${linked.length}개 중 ${done}개 완료`
-        : `연결된 업무 없음`;
+      const done = linked.filter(x => x.done).length;
+      const linkedInfo = linked.length ? t('kpi.linked', linked.length, done) : t('kpi.noLinked');
       const recordCount = (kpi.records || []).length;
       return `
       <div class="kpi-card" data-id="${kpi.id}">
         <div class="kpi-card-top">
           <div>
             <div class="kpi-title">${escapeHtml(kpi.title)}</div>
-            <div class="kpi-year">${kpi.year}년 목표${kpi.weight ? ` · 가중치 ${kpi.weight}%` : ''}</div>
+            <div class="kpi-year">${t('kpi.yearGoal', kpi.year)}${kpi.weight ? t('kpi.weightSuffix', kpi.weight) : ''}</div>
           </div>
           <div class="kpi-actions">
-            <button class="icon-btn" data-act="edit-kpi" title="수정">${ICON.edit}</button>
-            <button class="icon-btn" data-act="delete-kpi" title="삭제">${ICON.trash}</button>
+            <button class="icon-btn" data-act="edit-kpi" title="${t('btn.edit')}">${ICON.edit}</button>
+            <button class="icon-btn" data-act="delete-kpi" title="${t('btn.delete')}">${ICON.trash}</button>
           </div>
         </div>
         ${kpi.description ? `<div class="kpi-desc">${escapeHtml(kpi.description)}</div>` : ''}
@@ -296,11 +790,11 @@
         ${kpi.mode === 'manual' ? `<input type="range" min="0" max="100" value="${kpi.progress}" class="progress-slider" data-act="slider">` : ''}
         <div class="kpi-mode-row">
           <span class="kpi-linked-stat">${linkedInfo}</span>
-          <span class="mode-toggle" data-act="toggle-mode">${kpi.mode === 'manual' ? '수동 설정' : '자동 계산'}</span>
+          <span class="mode-toggle" data-act="toggle-mode">${kpi.mode === 'manual' ? t('kpi.modeManual') : t('kpi.modeAuto')}</span>
         </div>
         <div class="kpi-extra-row">
-          <button class="btn small" data-act="open-records">실적 관리 (${recordCount}건)</button>
-          <button class="btn small" data-act="open-rubric">${kpi.rubric ? '등급표 관리' : '+ 평가등급표'}</button>
+          <button class="btn small" data-act="open-records">${t('kpi.records', recordCount)}</button>
+          <button class="btn small" data-act="open-rubric">${kpi.rubric ? t('kpi.rubricManage') : t('kpi.rubricAdd')}</button>
         </div>
         ${kpi.rubric ? kpiRubricSummaryHtml(kpi) : ''}
       </div>`;
@@ -316,16 +810,16 @@
 
     document.getElementById(`${type}-title`).textContent = titleText;
 
-    const tasks = state.tasks.filter(t => t.planType === type && t.scopeKey === scopeKey);
-    const doneCount = tasks.filter(t => t.done).length;
+    const tasks = state.tasks.filter(x => x.planType === type && x.scopeKey === scopeKey);
+    const doneCount = tasks.filter(x => x.done).length;
     const summaryEl = document.getElementById(`${type}-summary`);
     summaryEl.innerHTML = tasks.length
-      ? `총 <b>${tasks.length}개</b> · 완료 <b>${doneCount}개</b> (${Math.round(doneCount / tasks.length * 100)}%)`
+      ? t('task.summary', tasks.length, doneCount, Math.round(doneCount / tasks.length * 100))
       : '';
 
     const listEl = document.getElementById(`${type}-list`);
     if (tasks.length === 0) {
-      listEl.innerHTML = `<div class="empty-state">등록된 할 일이 없습니다.</div>`;
+      listEl.innerHTML = `<div class="empty-state">${t('task.empty')}</div>`;
       return;
     }
     const sorted = [...tasks].sort((a, b) => {
@@ -335,33 +829,33 @@
       if (pa !== pb) return pa - pb;
       return a.createdAt - b.createdAt;
     });
-    listEl.innerHTML = sorted.map(t => {
-      const kpi = t.kpiId ? state.kpis.find(k => k.id === t.kpiId) : null;
-      const canReorder = !t.done;
-      const cat = t.category ? taskCategoryById(t.category) : null;
-      const catOptions = state.taskCategories.map(c => `<option value="${c.id}" ${t.category === c.id ? 'selected' : ''}>${escapeHtml(c.label)}</option>`).join('');
+    listEl.innerHTML = sorted.map(task => {
+      const kpi = task.kpiId ? state.kpis.find(k => k.id === task.kpiId) : null;
+      const canReorder = !task.done;
+      const cat = task.category ? taskCategoryById(task.category) : null;
+      const catOptions = state.taskCategories.map(c => `<option value="${c.id}" ${task.category === c.id ? 'selected' : ''}>${escapeHtml(c.label)}</option>`).join('');
       const kpiColor = kpi ? colorForKpi(kpi.id) : null;
       return `
-      <li class="task-row ${t.done ? 'done' : ''}" data-id="${t.id}">
-        ${canReorder ? `<span class="drag-handle" draggable="true" title="드래그해서 순서 바꾸기">${ICON.grip}</span>` : `<span class="drag-handle-spacer"></span>`}
-        <input type="checkbox" class="task-checkbox" data-act="toggle-task" ${t.done ? 'checked' : ''}>
+      <li class="task-row ${task.done ? 'done' : ''}" data-id="${task.id}">
+        ${canReorder ? `<span class="drag-handle" draggable="true" title="${t('task.dragTip')}">${ICON.grip}</span>` : `<span class="drag-handle-spacer"></span>`}
+        <input type="checkbox" class="task-checkbox" data-act="toggle-task" ${task.done ? 'checked' : ''}>
         <div class="task-main">
           <div class="task-line">
-            ${t.priority ? `<span class="priority-badge">${t.priority}</span>` : ''}
-            <span class="task-title">${escapeHtml(t.title)}</span>
-            ${t.dueTime ? `<span class="meta-badge due" title="목표 시간">${ICON.clock}${t.dueTime}</span>` : ''}
-            ${t.carriedFrom ? `<span class="meta-badge carry" title="원래 날짜: ${t.carriedFrom}">${ICON.carry}이월</span>` : ''}
+            ${task.priority ? `<span class="priority-badge">${task.priority}</span>` : ''}
+            <span class="task-title">${escapeHtml(task.title)}</span>
+            ${task.dueTime ? `<span class="meta-badge due" title="${t('task.dueTitle')}">${ICON.clock}${task.dueTime}</span>` : ''}
+            ${task.carriedFrom ? `<span class="meta-badge carry" title="${t('task.carryTitle', task.carriedFrom)}">${ICON.carry}${t('task.carry')}</span>` : ''}
             ${kpi ? `<span class="kpi-tag" style="color:${kpiColor};background:${kpiColor}14;border-color:${kpiColor}40">${escapeHtml(kpi.title)}</span>` : ''}
           </div>
-          ${t.note ? `<div class="task-note">${escapeHtml(t.note)}</div>` : ''}
+          ${task.note ? `<div class="task-note">${escapeHtml(task.note)}</div>` : ''}
         </div>
         <select class="inline-category-select" data-act="inline-category" style="color:${cat ? cat.color : 'var(--text-muted)'};background:${cat ? cat.color + '14' : 'var(--surface)'};border-color:${cat ? cat.color + '40' : 'var(--border)'}">
-          <option value="" ${!t.category ? 'selected' : ''}>구분 없음</option>
+          <option value="" ${!task.category ? 'selected' : ''}>${t('task.noCategory')}</option>
           ${catOptions}
         </select>
-        ${type === 'monthly' ? `<button class="btn small" data-act="split-suggest" title="주간에 나눠 담기">주간 분배</button>` : ''}
-        ${type === 'weekly' ? `<button class="btn small" data-act="split-suggest" title="일간에 나눠 담기">일간 분배</button>` : ''}
-        <button class="icon-btn" data-act="delete-task" title="삭제">${ICON.trash}</button>
+        ${type === 'monthly' ? `<button class="btn small" data-act="split-suggest" title="${t('task.splitWeeklyTip')}">${t('task.splitWeekly')}</button>` : ''}
+        ${type === 'weekly' ? `<button class="btn small" data-act="split-suggest" title="${t('task.splitDailyTip')}">${t('task.splitDaily')}</button>` : ''}
+        <button class="icon-btn" data-act="delete-task" title="${t('btn.delete')}">${ICON.trash}</button>
       </li>`;
     }).join('');
   }
@@ -372,10 +866,10 @@
     if (!weeklySummaryOpen) {
       panel.classList.add('hidden');
       panel.innerHTML = '';
-      btn.textContent = '업무 요약 보기';
+      btn.textContent = t('sum.show');
       return;
     }
-    btn.textContent = '업무 요약 닫기';
+    btn.textContent = t('sum.hide');
     panel.classList.remove('hidden');
 
     const monday = mondayOf(pointers.weekly);
@@ -384,31 +878,31 @@
     const weekTasks = state.tasks.filter(t => t.planType === 'daily' && weekdayKeys.includes(t.scopeKey) && t.category);
 
     const section = (title, tasks) => {
-      const doneTasks = tasks.filter(t => t.done).sort((a, b) => a.scopeKey.localeCompare(b.scopeKey));
+      const doneTasks = tasks.filter(x => x.done).sort((a, b) => a.scopeKey.localeCompare(b.scopeKey));
       const pending = tasks.length - doneTasks.length;
       const items = doneTasks.length
-        ? doneTasks.map(t => {
-            const d = new Date(t.scopeKey + 'T00:00:00');
-            const label = `${d.getMonth() + 1}/${d.getDate()}(${WEEKDAY_KR[d.getDay()]})`;
-            return `<li><span>${escapeHtml(t.title)}</span><span class="summary-date">${label}</span></li>`;
+        ? doneTasks.map(x => {
+            const d = new Date(x.scopeKey + 'T00:00:00');
+            const label = `${monthNameShort(d.getMonth())} ${d.getDate()} (${wd(d.getDay())})`;
+            return `<li><span>${escapeHtml(x.title)}</span><span class="summary-date">${label}</span></li>`;
           }).join('')
-        : `<li class="summary-empty">완료된 업무가 없습니다.</li>`;
+        : `<li class="summary-empty">${t('sum.empty')}</li>`;
       return `
         <div class="summary-section">
           <div class="summary-section-head">
             <span>${title}</span>
-            <span class="summary-count">${doneTasks.length}/${tasks.length}건 완료</span>
+            <span class="summary-count">${t('sum.count', doneTasks.length, tasks.length)}</span>
           </div>
           <ul class="summary-items">${items}</ul>
-          ${pending > 0 ? `<div class="summary-pending">미완료 ${pending}건</div>` : ''}
+          ${pending > 0 ? `<div class="summary-pending">${t('sum.pending', pending)}</div>` : ''}
         </div>`;
     };
 
     const fri = addDays(monday, 4);
-    const rangeLabel = `${monday.getMonth() + 1}/${monday.getDate()} ~ ${fri.getMonth() + 1}/${fri.getDate()}`;
-    const sectionsHtml = state.taskCategories.map((c, i) => section(`${i + 1}. ${c.label}`, weekTasks.filter(t => t.category === c.id))).join('');
+    const rangeLabel = `${monthNameShort(monday.getMonth())} ${monday.getDate()} - ${monthNameShort(fri.getMonth())} ${fri.getDate()}`;
+    const sectionsHtml = state.taskCategories.map((c, i) => section(`${i + 1}. ${escapeHtml(c.label)}`, weekTasks.filter(x => x.category === c.id))).join('');
     panel.innerHTML = `
-      <div class="summary-panel-head">주간 업무 요약<span class="summary-range">(${rangeLabel}, 평일 기준 · 구분 미선택 업무는 제외)</span></div>
+      <div class="summary-panel-head">${t('sum.head')}<span class="summary-range">${t('sum.range', rangeLabel)}</span></div>
       ${sectionsHtml}
     `;
   }
@@ -440,14 +934,14 @@
     badge.classList.remove('hidden');
     el.innerHTML = `
       <div class="alarm-banner">
-        <div class="alarm-banner-title">오늘의 일정 알림 (${hits.length}건)</div>
+        <div class="alarm-banner-title">${t('cal.alarmTitle', hits.length)}</div>
         ${hits.map(h => {
           const type = eventTypeById(h.ev.type);
           const rangeSuffix = h.ev.endDate && h.ev.endDate !== h.ev.startDate ? ' ~ ' + h.ev.endDate : '';
           return `
           <div class="alarm-item">
             <span class="calendar-chip" style="cursor:default;background:${type.color}">${escapeHtml(type.label)}</span>
-            <b>${escapeHtml(h.ev.title)}</b> — ${h.ev.startDate}${h.ev.startTime ? ' ' + h.ev.startTime : ''}${rangeSuffix} 예정 · <span class="alarm-lead">${h.def.label} 알림</span>
+            <b>${escapeHtml(h.ev.title)}</b> — ${h.ev.startDate}${h.ev.startTime ? ' ' + h.ev.startTime : ''}${rangeSuffix}${t('cal.alarmScheduled')}<span class="alarm-lead">${t('cal.alarmLead', alarmLabel(h.def))}</span>
           </div>`;
         }).join('')}
       </div>`;
@@ -457,7 +951,7 @@
     const list = document.getElementById('undated-events-list');
     const undated = state.events.filter(ev => !ev.startDate).sort((a, b) => a.createdAt - b.createdAt);
     if (undated.length === 0) {
-      list.innerHTML = `<div class="empty-state">등록된 미정 업무가 없습니다.</div>`;
+      list.innerHTML = `<div class="empty-state">${t('cal.undatedEmpty')}</div>`;
       return;
     }
     list.innerHTML = undated.map(ev => {
@@ -467,9 +961,9 @@
         <span class="calendar-chip" style="cursor:default;background:${type.color}">${escapeHtml(type.label)}</span>
         <span class="undated-title">${escapeHtml(ev.title)}</span>
         <div class="undated-actions">
-          <button class="btn small" data-act="edit-event">날짜/내용 수정</button>
-          <button class="btn small" data-act="add-to-planner">내 일정에 추가</button>
-          <button class="icon-btn" data-act="delete-event" title="삭제">${ICON.trash}</button>
+          <button class="btn small" data-act="edit-event">${t('cal.editEvent')}</button>
+          <button class="btn small" data-act="add-to-planner">${t('cal.addToPlanner')}</button>
+          <button class="icon-btn" data-act="delete-event" title="${t('btn.delete')}">${ICON.trash}</button>
         </div>
         ${ev.note ? `<div class="undated-note">${escapeHtml(ev.note)}</div>` : ''}
       </div>`;
@@ -483,7 +977,7 @@
     const monthKey = monthStr(pointer);
     const monthEventCount = state.events.filter(ev => ev.startDate && ev.startDate.slice(0, 7) === monthKey).length;
     document.getElementById('calendar-summary').innerHTML = monthEventCount
-      ? `이번 달 일정 <b>${monthEventCount}건</b>`
+      ? t('cal.monthCount', monthEventCount)
       : '';
 
     const eventsByDate = {};
@@ -503,7 +997,7 @@
     Object.values(eventsByDate).forEach(list => list.sort((a, b) => (a.ev.startTime || '99:99').localeCompare(b.ev.startTime || '99:99')));
 
     const todayKey = dateStr(new Date());
-    const weekdayHeader = WEEKDAY_KR_MON.map(w => `<div class="calendar-weekday">${w}</div>`).join('');
+    const weekdayHeader = WEEKDAYS[lang].mon.map(w => `<div class="calendar-weekday">${w}</div>`).join('');
     const cellsHtml = monthMatrix(pointer).map(cellDate => {
       const key = dateStr(cellDate);
       const outside = cellDate.getMonth() !== pointer.getMonth();
@@ -518,12 +1012,12 @@
         const timeLabel = isStart && ev.startTime ? escapeHtml(ev.startTime) + ' ' : '';
         return `<div class="calendar-chip ${segClass}" style="background:${type.color}" data-act="open-event" data-id="${ev.id}" title="${escapeHtml(type.label)} · ${escapeHtml(ev.title)}">${arrowPrefix}${timeLabel}${escapeHtml(ev.title)}</div>`;
       }).join('');
-      const more = extra > 0 ? `<div class="calendar-more" data-act="open-day" data-date="${key}">+${extra}개</div>` : '';
+      const more = extra > 0 ? `<div class="calendar-more" data-act="open-day" data-date="${key}">${t('cal.more', extra)}</div>` : '';
       return `
         <div class="calendar-cell ${outside ? 'outside' : ''} ${isToday ? 'today' : ''}">
           <div class="calendar-cell-head">
             <span class="calendar-day-num">${cellDate.getDate()}</span>
-            <button class="calendar-add-btn" data-act="add-event-day" data-date="${key}" title="일정 추가">${ICON.plus}</button>
+            <button class="calendar-add-btn" data-act="add-event-day" data-date="${key}" title="${t('cal.addEventTip')}">${ICON.plus}</button>
           </div>
           ${chips}
           ${more}
@@ -547,6 +1041,25 @@
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // ---------- static (index.html) i18n ----------
+  // index.html에 있는 고정 문구는 data-i18n / data-i18n-attr 속성으로 표시해두고
+  // 여기서 한 번에 채워 넣습니다. 언어를 바꾸면 페이지를 새로고침해서 다시 채웁니다.
+  function applyStaticI18n() {
+    document.documentElement.lang = lang;
+    document.title = t('app.title');
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    document.querySelectorAll('[data-i18n-attr]').forEach(el => {
+      el.getAttribute('data-i18n-attr').split(',').forEach(pair => {
+        const [attr, key] = pair.split(':');
+        el.setAttribute(attr, t(key));
+      });
+    });
+    const langSelect = document.getElementById('lang-select');
+    if (langSelect) langSelect.value = lang;
   }
 
   // ---------- modal ----------
@@ -581,8 +1094,8 @@
 
   function openConfirmDialog(message, opts) {
     opts = opts || {};
-    const confirmLabel = opts.confirmLabel || '확인';
-    const cancelLabel = opts.cancelLabel || '취소';
+    const confirmLabel = opts.confirmLabel || t('btn.confirm');
+    const cancelLabel = opts.cancelLabel || t('btn.cancel');
     const showCancel = opts.showCancel !== false;
     const danger = !!opts.danger;
     confirmBox.innerHTML = `
@@ -621,27 +1134,27 @@
     const isEdit = !!existing;
     const thisYear = new Date().getFullYear();
     openModal(`
-      <h2>${isEdit ? 'KPI 수정' : '새 KPI 등록'}</h2>
+      <h2>${isEdit ? t('kpi.modalEdit') : t('kpi.modalNew')}</h2>
       <form id="kpi-form">
         <div class="field">
-          <label>제목</label>
-          <input type="text" name="title" required value="${isEdit ? escapeHtml(existing.title) : ''}" placeholder="예: 신규 고객 30% 증가">
+          <label>${t('kpi.fTitle')}</label>
+          <input type="text" name="title" required value="${isEdit ? escapeHtml(existing.title) : ''}" placeholder="${t('kpi.fTitlePh')}">
         </div>
         <div class="field">
-          <label>목표 연도</label>
+          <label>${t('kpi.fYear')}</label>
           <input type="number" name="year" required value="${isEdit ? existing.year : thisYear}">
         </div>
         <div class="field">
-          <label>가중치 (%) — 전체 KPI 중 이 KPI의 비중, 선택사항</label>
-          <input type="number" name="weight" min="0" max="100" step="0.1" value="${isEdit && existing.weight != null ? existing.weight : ''}" placeholder="예: 25">
+          <label>${t('kpi.fWeight')}</label>
+          <input type="number" name="weight" min="0" max="100" step="0.1" value="${isEdit && existing.weight != null ? existing.weight : ''}" placeholder="${t('kpi.fWeightPh')}">
         </div>
         <div class="field">
-          <label>설명 (선택)</label>
-          <textarea name="description" placeholder="세부 목표나 지표를 적어두세요">${isEdit ? escapeHtml(existing.description || '') : ''}</textarea>
+          <label>${t('kpi.fDesc')}</label>
+          <textarea name="description" placeholder="${t('kpi.fDescPh')}">${isEdit ? escapeHtml(existing.description || '') : ''}</textarea>
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn" data-act="cancel">취소</button>
-          <button type="submit" class="btn primary">${isEdit ? '저장' : '등록'}</button>
+          <button type="button" class="btn" data-act="cancel">${t('btn.cancel')}</button>
+          <button type="submit" class="btn primary">${isEdit ? t('btn.save') : t('btn.create')}</button>
         </div>
       </form>
     `, (root) => {
@@ -682,7 +1195,7 @@
     const records = [...(kpi.records || [])].sort((a, b) => b.date.localeCompare(a.date));
     const editing = editingId ? kpi.records.find(r => r.id === editingId) : null;
     return `
-      <h2>실적 기록 - ${escapeHtml(kpi.title)}</h2>
+      <h2>${t('rec.title', escapeHtml(kpi.title))}</h2>
       <div class="records-list">
         ${records.length ? records.map(r => `
           <div class="record-row ${r.id === editingId ? 'editing' : ''}" data-id="${r.id}">
@@ -691,19 +1204,19 @@
               <span class="record-value">${escapeHtml(r.value)}</span>
             </div>
             ${r.note ? `<div class="record-note">${escapeHtml(r.note)}</div>` : ''}
-            <button class="icon-btn" data-act="delete-record" title="삭제">${ICON.trash}</button>
-          </div>`).join('') : `<div class="empty-state">등록된 실적이 없습니다.</div>`}
+            <button class="icon-btn" data-act="delete-record" title="${t('btn.delete')}">${ICON.trash}</button>
+          </div>`).join('') : `<div class="empty-state">${t('rec.empty')}</div>`}
       </div>
-      ${records.length ? `<div class="field-hint" style="margin-bottom:8px">실적을 클릭하면 내용을 수정할 수 있습니다.</div>` : ''}
+      ${records.length ? `<div class="field-hint" style="margin-bottom:8px">${t('rec.hint')}</div>` : ''}
       <div class="section-divider"></div>
       <form id="record-form">
-        <div class="field"><label>날짜</label><input type="date" name="date" required value="${editing ? editing.date : dateStr(new Date())}"></div>
-        <div class="field"><label>실적 내용</label><input type="text" name="value" required placeholder="예: 수율 97.2% 달성" value="${editing ? escapeHtml(editing.value) : ''}"></div>
-        <div class="field"><label>메모 (선택)</label><textarea name="note" placeholder="세부 내용">${editing ? escapeHtml(editing.note || '') : ''}</textarea></div>
+        <div class="field"><label>${t('rec.fDate')}</label><input type="date" name="date" required value="${editing ? editing.date : dateStr(new Date())}"></div>
+        <div class="field"><label>${t('rec.fValue')}</label><input type="text" name="value" required placeholder="${t('rec.fValuePh')}" value="${editing ? escapeHtml(editing.value) : ''}"></div>
+        <div class="field"><label>${t('rec.fNote')}</label><textarea name="note" placeholder="${t('rec.fNotePh')}">${editing ? escapeHtml(editing.note || '') : ''}</textarea></div>
         <div class="modal-actions">
-          <button type="button" class="btn" data-act="close">닫기</button>
-          ${editing ? `<button type="button" class="btn" data-act="cancel-edit">수정 취소</button>` : ''}
-          <button type="submit" class="btn primary">${editing ? '실적 수정 저장' : '실적 추가'}</button>
+          <button type="button" class="btn" data-act="close">${t('btn.close')}</button>
+          ${editing ? `<button type="button" class="btn" data-act="cancel-edit">${t('rec.cancelEdit')}</button>` : ''}
+          <button type="submit" class="btn primary">${editing ? t('rec.saveEdit') : t('rec.addBtn')}</button>
         </div>
       </form>`;
   }
@@ -726,7 +1239,7 @@
         root.querySelectorAll('[data-act="delete-record"]').forEach(btn => btn.addEventListener('click', e => {
           e.stopPropagation();
           const row = btn.closest('.record-row');
-          openConfirmDialog('이 실적 기록을 삭제할까요?', { danger: true, confirmLabel: '삭제', onConfirm: () => {
+          openConfirmDialog(t('rec.deleteConfirm'), { danger: true, confirmLabel: t('btn.delete'), onConfirm: () => {
             kpi.records = kpi.records.filter(r => r.id !== row.dataset.id);
             if (editingId === row.dataset.id) editingId = null;
             saveState();
@@ -763,30 +1276,30 @@
     const N = grades.length;
     const res = computeRubricResult(rubric);
     return `
-      <h2>평가 등급표 - ${escapeHtml(kpi.title)}</h2>
+      <h2>${t('rub.title', escapeHtml(kpi.title))}</h2>
       <div class="rubric-section">
-        <div class="rubric-section-head">등급 (좋음 → 나쁨 순, 이름은 자유롭게 바꿀 수 있어요)</div>
+        <div class="rubric-section-head">${t('rub.gradesHead')}</div>
         <div class="rubric-chip-list">
           ${grades.map((g, i) => `
             <div class="rubric-chip" style="border-color:${gradeColor(i, N)}">
               <input type="text" class="rubric-chip-input" data-field="grade-name" data-id="${g.id}" value="${escapeHtml(g.name)}">
               <span class="rubric-chip-btns">
-                <button type="button" data-act="grade-up" data-id="${g.id}" title="앞으로" ${i === 0 ? 'disabled' : ''}>${ICON.chevU}</button>
-                <button type="button" data-act="grade-down" data-id="${g.id}" title="뒤로" ${i === grades.length - 1 ? 'disabled' : ''}>${ICON.chevD}</button>
-                <button type="button" data-act="grade-remove" data-id="${g.id}" title="삭제">${ICON.close}</button>
+                <button type="button" data-act="grade-up" data-id="${g.id}" title="${t('rub.gradeUp')}" ${i === 0 ? 'disabled' : ''}>${ICON.chevU}</button>
+                <button type="button" data-act="grade-down" data-id="${g.id}" title="${t('rub.gradeDown')}" ${i === grades.length - 1 ? 'disabled' : ''}>${ICON.chevD}</button>
+                <button type="button" data-act="grade-remove" data-id="${g.id}" title="${t('btn.delete')}">${ICON.close}</button>
               </span>
             </div>`).join('')}
         </div>
-        <button type="button" class="btn small" data-act="add-grade">+ 등급 추가</button>
+        <button type="button" class="btn small" data-act="add-grade">${t('rub.addGrade')}</button>
       </div>
 
       <div class="rubric-section">
-        <div class="rubric-section-head">평가 기준 (행마다 등급 하나를 클릭해서 선택하세요)</div>
+        <div class="rubric-section-head">${t('rub.critHead')}</div>
         <div class="rubric-table-wrap">
           <table class="rubric-table">
             <thead>
               <tr>
-                <th>기준</th>
+                <th>${t('rub.colCrit')}</th>
                 ${grades.map((g, i) => `<th style="color:${gradeColor(i, N)}">${escapeHtml(g.name)}</th>`).join('')}
                 <th></th>
               </tr>
@@ -796,36 +1309,36 @@
                 <tr>
                   <td>
                     <input type="text" class="rubric-crit-label" data-id="${c.id}" value="${escapeHtml(c.label)}">
-                    <input type="number" class="rubric-crit-weight" data-id="${c.id}" min="0" step="0.1" placeholder="배점%" value="${c.weight != null ? c.weight : ''}">
+                    <input type="number" class="rubric-crit-weight" data-id="${c.id}" min="0" step="0.1" placeholder="${t('rub.weightPh')}" value="${c.weight != null ? c.weight : ''}">
                   </td>
                   ${grades.map((g, i) => `
                     <td class="rubric-cell ${c.selected === g.id ? 'selected' : ''}" style="${c.selected === g.id ? `border-color:${gradeColor(i, N)};background:${gradeColor(i, N)}22` : ''}">
-                      <textarea class="rubric-cell-text" data-crit="${c.id}" data-grade="${g.id}" placeholder="기준 내용">${escapeHtml(c.cells[g.id] || '')}</textarea>
-                      <button type="button" class="rubric-select-btn" data-act="select-cell" data-crit="${c.id}" data-grade="${g.id}" style="background:${gradeColor(i, N)}">${c.selected === g.id ? '선택됨' : '선택'}</button>
+                      <textarea class="rubric-cell-text" data-crit="${c.id}" data-grade="${g.id}" placeholder="${t('rub.cellPh')}">${escapeHtml(c.cells[g.id] || '')}</textarea>
+                      <button type="button" class="rubric-select-btn" data-act="select-cell" data-crit="${c.id}" data-grade="${g.id}" style="background:${gradeColor(i, N)}">${c.selected === g.id ? t('rub.selected') : t('rub.select')}</button>
                     </td>`).join('')}
-                  <td><button type="button" class="icon-btn" data-act="remove-criterion" data-id="${c.id}" title="삭제">${ICON.trash}</button></td>
+                  <td><button type="button" class="icon-btn" data-act="remove-criterion" data-id="${c.id}" title="${t('btn.delete')}">${ICON.trash}</button></td>
                 </tr>`).join('')}
             </tbody>
           </table>
         </div>
-        <button type="button" class="btn small" data-act="add-criterion" style="margin-top:10px">+ 평가 기준 추가</button>
+        <button type="button" class="btn small" data-act="add-criterion" style="margin-top:10px">${t('rub.addCrit')}</button>
         ${(() => {
           const weightSum = Math.round(rubric.criteria.reduce((a, c) => a + (c.weight || 0), 0) * 100) / 100;
           if (kpi.weight != null) {
             const ok = Math.abs(weightSum - kpi.weight) < 0.01;
-            return `<div class="rubric-weight-check ${ok ? 'ok' : 'warn'}">평가 기준 배점 합계: ${weightSum}% / KPI 가중치: ${kpi.weight}%${ok ? ' ✓' : ' — 합계를 KPI 가중치와 맞추면 더 정확해요'}</div>`;
+            return `<div class="rubric-weight-check ${ok ? 'ok' : 'warn'}">${t('rub.weightVsKpi', weightSum, kpi.weight)}${ok ? t('rub.weightMatch') : t('rub.weightMismatch')}</div>`;
           }
-          return `<div class="rubric-weight-check">평가 기준 배점 합계: ${weightSum}% (KPI 수정에서 가중치를 설정하면 목표 합계를 알려드려요)</div>`;
+          return `<div class="rubric-weight-check">${t('rub.weightOnly', weightSum)}</div>`;
         })()}
       </div>
 
       <div class="rubric-result">
         ${res && res.grade
-          ? `종합 등급: <span class="rubric-grade-badge" style="background:${res.color}">${escapeHtml(res.grade.name)}</span><span class="rubric-result-detail">평균 ${res.avg.toFixed(2)}점 · 평가 ${res.count}/${res.total}개 기준 선택됨</span>`
-          : `<span class="rubric-result-detail">아직 선택된 평가 기준이 없습니다.</span>`}
+          ? `${t('kpi.gradeSummary')}<span class="rubric-grade-badge" style="background:${res.color}">${escapeHtml(res.grade.name)}</span><span class="rubric-result-detail">${t('rub.resultDetail', res.avg.toFixed(2), res.count, res.total)}</span>`
+          : `<span class="rubric-result-detail">${t('rub.resultNone')}</span>`}
       </div>
       <div class="modal-actions">
-        <button type="button" class="btn primary" data-act="close">닫기</button>
+        <button type="button" class="btn primary" data-act="close">${t('btn.close')}</button>
       </div>
     `;
   }
@@ -836,13 +1349,13 @@
       openModal(rubricModalHtml(kpi), root => {
         root.querySelector('[data-act="close"]').addEventListener('click', () => { closeModal(); renderKpis(); });
         root.querySelector('[data-act="add-grade"]').addEventListener('click', () => {
-          kpi.rubric.grades.push({ id: uid(), name: '새 등급' });
+          kpi.rubric.grades.push({ id: uid(), name: t('rub.newGrade') });
           saveState(); render();
         });
         root.querySelectorAll('[data-act="grade-remove"]').forEach(btn => btn.addEventListener('click', () => {
-          if (kpi.rubric.grades.length <= 1) { showToast('등급은 최소 1개 이상 있어야 합니다.'); return; }
+          if (kpi.rubric.grades.length <= 1) { showToast(t('rub.minGrade')); return; }
           const id = btn.dataset.id;
-          openConfirmDialog('이 등급을 삭제할까요?', { danger: true, confirmLabel: '삭제', onConfirm: () => {
+          openConfirmDialog(t('rub.deleteGrade'), { danger: true, confirmLabel: t('btn.delete'), onConfirm: () => {
             kpi.rubric.grades = kpi.rubric.grades.filter(g => g.id !== id);
             kpi.rubric.criteria.forEach(c => { delete c.cells[id]; if (c.selected === id) c.selected = null; });
             saveState(); render();
@@ -861,12 +1374,12 @@
           if (g) { g.name = inp.value; saveState(); }
         }));
         root.querySelector('[data-act="add-criterion"]').addEventListener('click', () => {
-          kpi.rubric.criteria.push({ id: uid(), label: '새 평가 기준', cells: {}, selected: null, weight: null });
+          kpi.rubric.criteria.push({ id: uid(), label: t('rub.newCrit'), cells: {}, selected: null, weight: null });
           saveState(); render();
         });
         root.querySelectorAll('[data-act="remove-criterion"]').forEach(btn => btn.addEventListener('click', () => {
           const id = btn.dataset.id;
-          openConfirmDialog('이 평가 기준을 삭제할까요?', { danger: true, confirmLabel: '삭제', onConfirm: () => {
+          openConfirmDialog(t('rub.deleteCrit'), { danger: true, confirmLabel: t('btn.delete'), onConfirm: () => {
             kpi.rubric.criteria = kpi.rubric.criteria.filter(c => c.id !== id);
             saveState(); render();
           }});
@@ -896,80 +1409,80 @@
     const isEdit = !!existingTask;
     const pointer = pointers[planType];
     const label = planType === 'daily' ? fmtDaily(pointer) : planType === 'weekly' ? fmtWeekly(mondayOf(pointer)) : fmtMonthly(pointer);
-    const typeLabel = { daily: '일간', weekly: '주간', monthly: '월간' }[planType];
+    const typeLabel = { daily: t('tab.daily'), weekly: t('tab.weekly'), monthly: t('tab.monthly') }[planType];
     const kpiOptions = state.kpis.map(k => `<option value="${k.id}" ${isEdit && existingTask.kpiId === k.id ? 'selected' : ''}>${escapeHtml(k.title)}</option>`).join('');
 
     let dateFieldHtml = '';
     if (isEdit) {
       if (planType === 'daily') {
-        dateFieldHtml = `<div class="field"><label>날짜</label><input type="date" name="rescheduleDate" value="${existingTask.scopeKey}"></div>`;
+        dateFieldHtml = `<div class="field"><label>${t('task.fDate')}</label><input type="date" name="rescheduleDate" value="${existingTask.scopeKey}"></div>`;
       } else if (planType === 'weekly') {
-        dateFieldHtml = `<div class="field"><label>주 (해당 주의 아무 날짜나 선택)</label><input type="date" name="rescheduleDate" value="${existingTask.scopeKey}"></div>`;
+        dateFieldHtml = `<div class="field"><label>${t('task.fWeek')}</label><input type="date" name="rescheduleDate" value="${existingTask.scopeKey}"></div>`;
       } else {
-        dateFieldHtml = `<div class="field"><label>월</label><input type="month" name="rescheduleMonth" value="${existingTask.scopeKey}"></div>`;
+        dateFieldHtml = `<div class="field"><label>${t('task.fMonth')}</label><input type="month" name="rescheduleMonth" value="${existingTask.scopeKey}"></div>`;
       }
     }
 
     const categoryOptions = state.taskCategories.map(c => `<option value="${c.id}" ${isEdit && existingTask.category === c.id ? 'selected' : ''}>${escapeHtml(c.label)}</option>`).join('');
     const commonFields = `
         <div class="field">
-          <label>우선순위 (숫자, 작을수록 먼저 표시 · 목록에서 드래그로도 바꿀 수 있어요)</label>
+          <label>${t('task.fPriority')}</label>
           <input type="number" name="priority" min="1" value="${isEdit ? (existingTask.priority ?? defaultNextPriority(planType)) : defaultNextPriority(planType)}">
         </div>
         <div class="field">
-          <label>구분 (선택)</label>
+          <label>${t('task.fCategory')}</label>
           <div style="display:flex;gap:8px;align-items:center">
             <select name="category" style="flex:1">
-              <option value="" ${(!isEdit || !existingTask.category) ? 'selected' : ''}>선택 안 함</option>
+              <option value="" ${(!isEdit || !existingTask.category) ? 'selected' : ''}>${t('task.fCategoryNone')}</option>
               ${categoryOptions}
             </select>
-            <button type="button" class="btn small" data-act="manage-categories">구분 관리</button>
+            <button type="button" class="btn small" data-act="manage-categories">${t('task.manageCategories')}</button>
           </div>
-          <div class="field-hint">구분을 선택하지 않으면 금요일 주간 업무 요약에는 표시되지 않습니다.</div>
+          <div class="field-hint">${t('task.categoryHint')}</div>
         </div>`;
 
     const recurrenceOptionsByType = {
-      daily: `<option value="none">반복 없음</option><option value="daily">매일 반복 (30일)</option><option value="weekly">매주 반복 (같은 요일, 12주)</option>`,
-      weekly: `<option value="none">반복 없음</option><option value="weekly">매주 반복 (12주)</option>`,
-      monthly: `<option value="none">반복 없음</option><option value="monthly">매월 반복 (6개월)</option>`,
+      daily: `<option value="none">${t('task.recNone')}</option><option value="daily">${t('task.recDaily')}</option><option value="weekly">${t('task.recWeeklySameDay')}</option>`,
+      weekly: `<option value="none">${t('task.recNone')}</option><option value="weekly">${t('task.recWeekly')}</option>`,
+      monthly: `<option value="none">${t('task.recNone')}</option><option value="monthly">${t('task.recMonthly')}</option>`,
     };
     const recurrenceField = !isEdit ? `
         <div class="field">
-          <label>반복</label>
+          <label>${t('task.fRecurrence')}</label>
           <select name="recurrence">${recurrenceOptionsByType[planType]}</select>
         </div>` : '';
 
     openModal(`
-      <h2>${isEdit ? '업무 수정' : `${typeLabel} 할 일 추가`}</h2>
+      <h2>${isEdit ? t('task.modalEdit') : t('task.modalNew', typeLabel)}</h2>
       <form id="task-form">
         <div class="field">
-          <label>제목</label>
-          <input type="text" name="title" required value="${isEdit ? escapeHtml(existingTask.title) : ''}" placeholder="할 일을 입력하세요">
+          <label>${t('task.fTitle')}</label>
+          <input type="text" name="title" required value="${isEdit ? escapeHtml(existingTask.title) : ''}" placeholder="${t('task.fTitlePh')}">
         </div>
         <div class="field">
-          <label>연결할 KPI (선택)</label>
+          <label>${t('task.fKpi')}</label>
           <select name="kpiId">
-            <option value="">연결 안 함</option>
+            <option value="">${t('task.fKpiNone')}</option>
             ${kpiOptions}
           </select>
         </div>
         <div class="field">
-          <label>메모 (선택)</label>
-          <textarea name="note" placeholder="세부 내용이나 참고사항을 적어두세요">${isEdit ? escapeHtml(existingTask.note || '') : ''}</textarea>
+          <label>${t('task.fNote')}</label>
+          <textarea name="note" placeholder="${t('task.fNotePh')}">${isEdit ? escapeHtml(existingTask.note || '') : ''}</textarea>
         </div>
         <div class="field">
-          <label>목표 시간 (선택, ~까지 완료)</label>
+          <label>${t('task.fDue')}</label>
           <input type="time" name="dueTime" value="${isEdit ? (existingTask.dueTime || '') : ''}">
         </div>
         ${commonFields}
         ${dateFieldHtml}
         ${recurrenceField}
-        ${!isEdit ? `<div class="field-hint">${label}에 추가됩니다.</div>` : ''}
+        ${!isEdit ? `<div class="field-hint">${t('task.addTo', label)}</div>` : ''}
         <div class="modal-actions" style="justify-content:space-between">
-          ${isEdit ? `<button type="button" class="btn danger" data-act="delete">삭제</button>` : '<span></span>'}
+          ${isEdit ? `<button type="button" class="btn danger" data-act="delete">${t('btn.delete')}</button>` : '<span></span>'}
           <div style="display:flex;gap:8px">
-            <button type="button" class="btn" data-act="cancel">취소</button>
-            <button type="submit" class="btn primary">${isEdit ? '저장' : '추가'}</button>
+            <button type="button" class="btn" data-act="cancel">${t('btn.cancel')}</button>
+            <button type="submit" class="btn primary">${isEdit ? t('btn.save') : t('btn.add')}</button>
           </div>
         </div>
       </form>
@@ -978,7 +1491,7 @@
       root.querySelector('[data-act="manage-categories"]').addEventListener('click', () => openTaskCategoryModal());
       if (isEdit) {
         root.querySelector('[data-act="delete"]').addEventListener('click', () => {
-          openConfirmDialog('이 업무를 삭제할까요?', { danger: true, confirmLabel: '삭제', onConfirm: () => {
+          openConfirmDialog(t('task.deleteConfirm'), { danger: true, confirmLabel: t('btn.delete'), onConfirm: () => {
             state.tasks = state.tasks.filter(t => t.id !== existingTask.id);
             saveState();
             closeModal();
@@ -1066,22 +1579,22 @@
         const mon = dateStr(mondayOf(d));
         if (!mondayKeys.includes(mon)) mondayKeys.push(mon);
       }
-      options = mondayKeys.map((mon, i) => ({ key: mon, label: `${i + 1}주차 (${fmtWeekly(new Date(mon + 'T00:00:00'))})` }));
+      options = mondayKeys.map((mon, i) => ({ key: mon, label: t('split.weekOption', i + 1, fmtWeekly(new Date(mon + 'T00:00:00'))) }));
     } else {
       const monday = mondayOf(new Date(task.scopeKey + 'T00:00:00'));
       options = [0, 1, 2, 3, 4].map(i => {
         const d = addDays(monday, i);
-        return { key: dateStr(d), label: `${WEEKDAY_KR[d.getDay()]}요일 (${d.getMonth() + 1}/${d.getDate()})` };
+        return { key: dateStr(d), label: t('split.dayOption', wd(d.getDay()), `${monthNameShort(d.getMonth())} ${d.getDate()}`) };
       });
     }
     openModal(`
-      <h2>${targetType === 'weekly' ? '주간' : '일간'}에 나눠 담기 추천</h2>
-      <div class="field-hint" style="margin-bottom:14px">"${escapeHtml(task.title)}"을(를) 아래에 나눠 등록합니다. (규칙 기반 자동 분배이며, 실제 업무량을 분석한 결과는 아닙니다. 필요한 항목만 선택하세요.)</div>
+      <h2>${t('split.title', targetType === 'weekly' ? t('tab.weekly') : t('tab.daily'))}</h2>
+      <div class="field-hint" style="margin-bottom:14px">${t('split.hint', escapeHtml(task.title))}</div>
       <form id="split-form">
         ${options.map(o => `<label class="checkbox-label" style="margin-bottom:10px"><input type="checkbox" name="opt" value="${o.key}" checked> ${o.label}</label><br>`).join('')}
         <div class="modal-actions">
-          <button type="button" class="btn" data-act="cancel">취소</button>
-          <button type="submit" class="btn primary">등록</button>
+          <button type="button" class="btn" data-act="cancel">${t('btn.cancel')}</button>
+          <button type="submit" class="btn primary">${t('btn.create')}</button>
         </div>
       </form>
     `, (root) => {
@@ -1121,52 +1634,52 @@
     const typeOptions = state.eventTypes.map(t => `<option value="${t.id}" ${typeVal === t.id ? 'selected' : ''}>${escapeHtml(t.label)}</option>`).join('');
 
     openModal(`
-      <h2>${isEdit ? '일정 수정' : '새 일정 추가'}</h2>
+      <h2>${isEdit ? t('ev.modalEdit') : t('ev.modalNew')}</h2>
       <form id="event-form">
         <div class="field">
-          <label>제목</label>
-          <input type="text" name="title" required value="${isEdit ? escapeHtml(existing.title) : ''}" placeholder="예: OO동 소방설비 공사">
+          <label>${t('ev.fTitle')}</label>
+          <input type="text" name="title" required value="${isEdit ? escapeHtml(existing.title) : ''}" placeholder="${t('ev.fTitlePh')}">
         </div>
         <div class="field">
-          <label>구분</label>
+          <label>${t('ev.fType')}</label>
           <div style="display:flex;gap:8px;align-items:center">
             <select name="type" style="flex:1">${typeOptions}</select>
-            <button type="button" class="btn small" data-act="manage-types">구분 관리</button>
+            <button type="button" class="btn small" data-act="manage-types">${t('ev.manageTypes')}</button>
           </div>
         </div>
         <div class="field">
-          <label class="checkbox-label"><input type="checkbox" name="undated" id="ev-undated" ${isUndated ? 'checked' : ''}> 날짜 미정 (장기 준비 업무로 등록)</label>
+          <label class="checkbox-label"><input type="checkbox" name="undated" id="ev-undated" ${isUndated ? 'checked' : ''}> ${t('ev.undated')}</label>
         </div>
         <div class="field ${isUndated ? 'hidden' : ''}" id="ev-date-field">
-          <label>시작일</label>
+          <label>${t('ev.fStartDate')}</label>
           <input type="date" name="startDate" value="${startDateVal}">
-          <label style="margin-top:8px">종료일 (선택, 여러 날 지속되는 일정만)</label>
+          <label style="margin-top:8px">${t('ev.fEndDate')}</label>
           <input type="date" name="endDate" value="${endDateVal}">
         </div>
         <div class="field ${isUndated ? 'hidden' : ''}" id="ev-time-field">
-          <label>시작 시간 (선택)</label>
+          <label>${t('ev.fStartTime')}</label>
           <input type="time" name="startTime" value="${isEdit ? (existing.startTime || '') : ''}">
-          <label style="margin-top:8px">종료 시간 (선택)</label>
+          <label style="margin-top:8px">${t('ev.fEndTime')}</label>
           <input type="time" name="endTime" value="${isEdit ? (existing.endTime || '') : ''}">
         </div>
         <div class="field">
-          <label>메모 (선택)</label>
-          <textarea name="note" placeholder="세부 내용을 적어두세요">${isEdit ? escapeHtml(existing.note || '') : ''}</textarea>
+          <label>${t('ev.fNote')}</label>
+          <textarea name="note" placeholder="${t('ev.fNotePh')}">${isEdit ? escapeHtml(existing.note || '') : ''}</textarea>
         </div>
         <div class="field ${isUndated ? 'hidden' : ''}" id="ev-alarm-field">
-          <label class="checkbox-label"><input type="checkbox" name="alarmsOn" id="ev-alarms-on" ${alarmsOn ? 'checked' : ''}> 알람 사용</label>
+          <label class="checkbox-label"><input type="checkbox" name="alarmsOn" id="ev-alarms-on" ${alarmsOn ? 'checked' : ''}> ${t('ev.alarmsOn')}</label>
           <div class="alarm-checks">
             ${ALARM_DEFS.map(def => `
-              <label class="checkbox-label small"><input type="checkbox" name="alarm-${def.key}" ${alarms[def.key] !== false ? 'checked' : ''}> ${def.label}</label>
+              <label class="checkbox-label small"><input type="checkbox" name="alarm-${def.key}" ${alarms[def.key] !== false ? 'checked' : ''}> ${alarmLabel(def)}</label>
             `).join('')}
           </div>
         </div>
         <div class="modal-actions" style="justify-content:space-between">
-          ${isEdit ? `<button type="button" class="btn danger" data-act="delete">삭제</button>` : '<span></span>'}
+          ${isEdit ? `<button type="button" class="btn danger" data-act="delete">${t('btn.delete')}</button>` : '<span></span>'}
           <div style="display:flex;gap:8px">
-            <button type="button" class="btn" data-act="cancel">취소</button>
-            ${isEdit ? `<button type="button" class="btn" data-act="add-to-planner">내 일정에 추가</button>` : ''}
-            <button type="submit" class="btn primary">${isEdit ? '저장' : '등록'}</button>
+            <button type="button" class="btn" data-act="cancel">${t('btn.cancel')}</button>
+            ${isEdit ? `<button type="button" class="btn" data-act="add-to-planner">${t('cal.addToPlanner')}</button>` : ''}
+            <button type="submit" class="btn primary">${isEdit ? t('btn.save') : t('btn.create')}</button>
           </div>
         </div>
       </form>
@@ -1184,7 +1697,7 @@
       root.querySelector('[data-act="cancel"]').addEventListener('click', closeModal);
       if (isEdit) {
         root.querySelector('[data-act="delete"]').addEventListener('click', () => {
-          openConfirmDialog(`"${existing.title}" 일정을 삭제할까요?`, { danger: true, confirmLabel: '삭제', onConfirm: () => {
+          openConfirmDialog(t('ev.deleteConfirm', existing.title), { danger: true, confirmLabel: t('btn.delete'), onConfirm: () => {
             state.events = state.events.filter(x => x.id !== existing.id);
             saveState();
             closeModal();
@@ -1204,8 +1717,8 @@
         const undated = fd.get('undated') === 'on';
         const startDate = undated ? null : (fd.get('startDate') || null);
         let endDate = undated ? null : (fd.get('endDate') || startDate);
-        if (!undated && !startDate) { showToast('시작일을 입력하거나 "날짜 미정"을 선택하세요.'); return; }
-        if (!undated && endDate < startDate) { showToast('종료일은 시작일보다 빠를 수 없습니다.'); return; }
+        if (!undated && !startDate) { showToast(t('ev.needStart')); return; }
+        if (!undated && endDate < startDate) { showToast(t('ev.endBeforeStart')); return; }
         const newAlarms = {};
         ALARM_DEFS.forEach(def => { newAlarms[def.key] = fd.get(`alarm-${def.key}`) === 'on'; });
         const payload = {
@@ -1235,9 +1748,9 @@
     const evs = state.events.filter(e => e.startDate && dateKey >= e.startDate && dateKey <= (e.endDate || e.startDate))
       .sort((a, b) => (a.startTime || '99:99').localeCompare(b.startTime || '99:99'));
     const d = new Date(dateKey + 'T00:00:00');
-    const label = `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${WEEKDAY_KR[d.getDay()]})`;
+    const label = t('date.dayTitle', d.getFullYear(), monthName(d.getMonth()), d.getDate(), wd(d.getDay()));
     openModal(`
-      <h2>${label} 일정</h2>
+      <h2>${label}${t('cal.dayTitleSuffix')}</h2>
       <div class="day-events-list">
         ${evs.map(ev => {
           const type = eventTypeById(ev.type);
@@ -1250,8 +1763,8 @@
         }).join('')}
       </div>
       <div class="modal-actions">
-        <button type="button" class="btn" data-act="close">닫기</button>
-        <button type="button" class="btn primary" data-act="add">+ 일정 추가</button>
+        <button type="button" class="btn" data-act="close">${t('btn.close')}</button>
+        <button type="button" class="btn primary" data-act="add">${t('btn.addEvent')}</button>
       </div>
     `, (root) => {
       root.querySelector('[data-act="close"]').addEventListener('click', closeModal);
@@ -1271,28 +1784,28 @@
     const defaultDate = ev.startDate || todayKey;
     const defaultMonth = (ev.startDate || todayKey).slice(0, 7);
     openModal(`
-      <h2>내 일정에 추가</h2>
+      <h2>${t('atp.title')}</h2>
       <form id="add-to-planner-form">
-        <div class="field-hint" style="margin-bottom:14px">"${escapeHtml(ev.title)}"을(를) 추가할 위치를 선택하세요.</div>
+        <div class="field-hint" style="margin-bottom:14px">${t('atp.hint', escapeHtml(ev.title))}</div>
         <div class="field">
-          <label>추가할 위치</label>
+          <label>${t('atp.where')}</label>
           <select name="planType" id="atp-plantype">
-            <option value="daily">일간</option>
-            <option value="weekly">주간</option>
-            <option value="monthly">월간</option>
+            <option value="daily">${t('tab.daily')}</option>
+            <option value="weekly">${t('tab.weekly')}</option>
+            <option value="monthly">${t('tab.monthly')}</option>
           </select>
         </div>
         <div class="field" id="atp-date-field">
-          <label>날짜</label>
+          <label>${t('task.fDate')}</label>
           <input type="date" name="date" value="${defaultDate}">
         </div>
         <div class="field hidden" id="atp-month-field">
-          <label>월</label>
+          <label>${t('task.fMonth')}</label>
           <input type="month" name="month" value="${defaultMonth}">
         </div>
         <div class="modal-actions">
-          <button type="button" class="btn" data-act="cancel">취소</button>
-          <button type="submit" class="btn primary">추가</button>
+          <button type="button" class="btn" data-act="cancel">${t('btn.cancel')}</button>
+          <button type="submit" class="btn primary">${t('btn.add')}</button>
         </div>
       </form>
     `, (root) => {
@@ -1341,16 +1854,16 @@
     return `
       <h2>${escapeHtml(title)}</h2>
       <div class="type-manage-list">
-        ${list.map(t => `
-          <div class="type-manage-row" data-id="${t.id}">
-            <input type="color" class="type-color-input" data-id="${t.id}" value="${t.color}">
-            <input type="text" class="type-label-input" data-id="${t.id}" value="${escapeHtml(t.label)}">
-            <button type="button" class="icon-btn" data-act="remove-tag" data-id="${t.id}" title="삭제">${ICON.trash}</button>
+        ${list.map(item => `
+          <div class="type-manage-row" data-id="${item.id}">
+            <input type="color" class="type-color-input" data-id="${item.id}" value="${item.color}">
+            <input type="text" class="type-label-input" data-id="${item.id}" value="${escapeHtml(item.label)}">
+            <button type="button" class="icon-btn" data-act="remove-tag" data-id="${item.id}" title="${t('btn.delete')}">${ICON.trash}</button>
           </div>`).join('')}
       </div>
-      <button type="button" class="btn small" data-act="add-tag">+ 항목 추가</button>
+      <button type="button" class="btn small" data-act="add-tag">${t('tag.addItem')}</button>
       <div class="modal-actions">
-        <button type="button" class="btn primary" data-act="close">닫기</button>
+        <button type="button" class="btn primary" data-act="close">${t('btn.close')}</button>
       </div>`;
   }
   function openTagManagerModal(title, list, onClose) {
@@ -1358,77 +1871,81 @@
       openModal(tagManagerModalHtml(title, list), root => {
         root.querySelector('[data-act="close"]').addEventListener('click', () => { closeModal(); onClose(); });
         root.querySelector('[data-act="add-tag"]').addEventListener('click', () => {
-          list.push({ id: uid(), label: '새 항목', color: PALETTE[list.length % PALETTE.length] });
+          list.push({ id: uid(), label: t('tag.newItem'), color: PALETTE[list.length % PALETTE.length] });
           saveState(); render();
         });
         root.querySelectorAll('[data-act="remove-tag"]').forEach(btn => btn.addEventListener('click', () => {
-          if (list.length <= 1) { showToast('최소 1개 이상 있어야 합니다.'); return; }
+          if (list.length <= 1) { showToast(t('tag.minOne')); return; }
           const id = btn.dataset.id;
-          openConfirmDialog('이 항목을 삭제할까요?', { danger: true, confirmLabel: '삭제', onConfirm: () => {
+          openConfirmDialog(t('tag.deleteConfirm'), { danger: true, confirmLabel: t('btn.delete'), onConfirm: () => {
             const idx = list.findIndex(x => x.id === id);
             if (idx !== -1) list.splice(idx, 1);
             saveState(); render();
           }});
         }));
         root.querySelectorAll('.type-label-input').forEach(inp => inp.addEventListener('input', () => {
-          const t = list.find(x => x.id === inp.dataset.id);
-          if (t) { t.label = inp.value; saveState(); }
+          const item = list.find(x => x.id === inp.dataset.id);
+          if (item) { item.label = inp.value; saveState(); }
         }));
         root.querySelectorAll('.type-color-input').forEach(inp => inp.addEventListener('input', () => {
-          const t = list.find(x => x.id === inp.dataset.id);
-          if (t) { t.color = inp.value; saveState(); }
+          const item = list.find(x => x.id === inp.dataset.id);
+          if (item) { item.color = inp.value; saveState(); }
         }));
       });
     }
     render();
   }
-  function openEventTypeModal() { openTagManagerModal('일정 구분 관리', state.eventTypes, renderCalendar); }
-  function openTaskCategoryModal() { openTagManagerModal('구분(카테고리) 관리', state.taskCategories, renderAll); }
+  function openEventTypeModal() { openTagManagerModal(t('tag.eventTypes'), state.eventTypes, renderCalendar); }
+  function openTaskCategoryModal() { openTagManagerModal(t('tag.taskCategories'), state.taskCategories, renderAll); }
 
   // ---------- help ----------
   function helpModalHtml() {
     return `
-      <h2>사용 안내</h2>
-      <p class="help-intro">각 탭이 어떤 역할을 하는지, 어떤 기능을 쓸 수 있는지 정리했습니다.</p>
+      <h2>${t('help.title')}</h2>
+      <p class="help-intro">${t('help.intro')}</p>
       <div class="help-content">
         <section class="help-section">
-          <h3>1. 연간 KPI</h3>
-          <p>올해 달성하고 싶은 목표를 KPI로 등록합니다. "+ 새 KPI"를 눌러 제목, 목표 연도, 설명을 입력하세요.</p>
+          <h3>${t('help.h1')}</h3>
+          <p>${t('help.p1')}</p>
           <ul>
-            <li><b>진행률</b>: KPI에 업무를 연결하면 완료한 업무 비율로 자동 계산돼요. "수동 설정"으로 바꾸면 슬라이더로 직접 % 조정도 가능해요.</li>
-            <li><b>가중치(%)</b>: 여러 KPI 중 이 KPI가 차지하는 비중을 정할 수 있어요. 전체 KPI 가중치 합이 100%가 되도록 맞추면 좋아요.</li>
-            <li><b>실적 관리</b>: 실제로 달성한 실적을 날짜별로 기록해두는 곳이에요. 기록을 클릭하면 내용을 수정할 수 있어요.</li>
-            <li><b>평가등급표</b>: S·A·B·C처럼 등급 이름을 자유롭게 정하고, 평가 기준마다 등급을 선택해 종합 등급을 계산해요. 평가 기준마다 배점(%)을 입력하면 KPI 가중치에 맞춰 더 정교하게 계산돼요.</li>
+            <li>${t('help.l1a')}</li>
+            <li>${t('help.l1b')}</li>
+            <li>${t('help.l1c')}</li>
+            <li>${t('help.l1d')}</li>
           </ul>
         </section>
         <section class="help-section">
-          <h3>2. 달력</h3>
-          <p>공사, 기타일정 등 원하는 구분을 직접 만들어 일정을 등록하고 관리합니다.</p>
+          <h3>${t('help.h2')}</h3>
+          <p>${t('help.p2')}</p>
           <ul>
-            <li><b>구분 관리</b>: 일정 추가 화면의 "구분 관리" 버튼으로 구분 이름과 색상을 자유롭게 추가·수정·삭제할 수 있어요.</li>
-            <li><b>기간이 있는 일정</b>: 시작일과 종료일을 다르게 지정하면 여러 날에 걸쳐 달력에 이어서 표시돼요. 시작·종료 시간도 선택적으로 넣을 수 있어요.</li>
-            <li><b>알림</b>: 한 달 전 ~ 하루 전까지 원하는 시점에 알림을 받을 수 있고, 알림별로 켜고 끌 수 있어요.</li>
-            <li><b>날짜 미정</b>: 아직 날짜를 못 정한 장기 준비 업무는 "날짜 미정"으로 등록하면 [일간] 탭 아래쪽 목록에 모아서 보여줘요.</li>
-            <li>일정의 "내 일정에 추가" 버튼으로 일간·주간·월간 할 일로 바로 옮길 수 있어요.</li>
+            <li>${t('help.l2a')}</li>
+            <li>${t('help.l2b')}</li>
+            <li>${t('help.l2c')}</li>
+            <li>${t('help.l2d')}</li>
+            <li>${t('help.l2e')}</li>
           </ul>
         </section>
         <section class="help-section">
-          <h3>3. 일간 · 주간 · 월간</h3>
-          <p>실제 할 일을 날짜/주/월 단위로 계획하고 체크합니다.</p>
+          <h3>${t('help.h3')}</h3>
+          <p>${t('help.p3')}</p>
           <ul>
-            <li><b>순서 바꾸기</b>: 항목 왼쪽 손잡이(점 여섯 개)를 누른 채 위아래로 드래그하면 순서가 바뀌어요. 숫자를 직접 정하고 싶으면 항목을 클릭해 우선순위 칸에 숫자를 입력해도 돼요.</li>
-            <li><b>메모 · 목표 시간</b>: 항목을 클릭하면 메모와 "몇 시까지 끝낼지" 목표 시간을 넣을 수 있어요. 둘 다 선택 사항이고, 입력하면 목록에 함께 표시돼요.</li>
-            <li><b>구분</b>: 각 항목의 구분(예: SHE, 생산 및 업무)을 목록에서 바로 드롭다운으로 바꿀 수 있어요. "구분 관리"로 구분 종류 자체도 자유롭게 추가·이름변경·삭제할 수 있어요.</li>
-            <li><b>반복 업무</b>: 할 일을 추가할 때 매일/매주/매월 반복을 선택하면 앞으로의 일정에 자동으로 채워져요.</li>
-            <li><b>자동 이월</b>: 어제까지 완료하지 못한 일간 업무는 오늘로 자동으로 넘어와요. "이월" 표시로 확인할 수 있어요.</li>
-            <li><b>수정 · 완료 후 이월</b>: 항목을 클릭하면 언제든 수정할 수 있고, 완료된 업무도 클릭해서 날짜를 다른 날로 옮길 수 있어요.</li>
-            <li><b>나눠 담기</b>: 월간 업무의 "주간 분배", 주간 업무의 "일간 분배" 버튼을 누르면 각 주/일에 나눠 등록하도록 추천해줘요.</li>
-            <li><b>주간 업무 요약</b>: [주간] 탭에서 "업무 요약 보기"를 누르면 그 주 구분별 완료 현황을 한눈에 볼 수 있어요. (구분을 선택하지 않은 업무는 요약에서 제외돼요)</li>
+            <li>${t('help.l3a')}</li>
+            <li>${t('help.l3b')}</li>
+            <li>${t('help.l3c')}</li>
+            <li>${t('help.l3d')}</li>
+            <li>${t('help.l3e')}</li>
+            <li>${t('help.l3f')}</li>
+            <li>${t('help.l3g')}</li>
+            <li>${t('help.l3h')}</li>
           </ul>
+        </section>
+        <section class="help-section">
+          <h3>${t('help.h4')}</h3>
+          <p>${t('help.p4')}</p>
         </section>
       </div>
       <div class="modal-actions">
-        <button type="button" class="btn primary" data-act="close">닫기</button>
+        <button type="button" class="btn primary" data-act="close">${t('btn.close')}</button>
       </div>`;
   }
   function openHelpModal() {
@@ -1504,7 +2021,7 @@
     } else if (act === 'add-to-planner') {
       openAddToPlannerModal(ev);
     } else if (act === 'delete-event') {
-      openConfirmDialog(`"${ev.title}" 항목을 삭제할까요?`, { danger: true, confirmLabel: '삭제', onConfirm: () => {
+      openConfirmDialog(t('cal.deleteEventConfirm', ev.title), { danger: true, confirmLabel: t('btn.delete'), onConfirm: () => {
         state.events = state.events.filter(x => x.id !== ev.id);
         saveState();
         renderCalendar();
@@ -1521,7 +2038,7 @@
     if (act === 'edit-kpi') {
       openKpiModal(kpi);
     } else if (act === 'delete-kpi') {
-      openConfirmDialog(`"${kpi.title}" KPI를 삭제할까요? 연결된 업무의 KPI 태그도 함께 해제됩니다.`, { danger: true, confirmLabel: '삭제', onConfirm: () => {
+      openConfirmDialog(t('kpi.deleteConfirm', kpi.title), { danger: true, confirmLabel: t('btn.delete'), onConfirm: () => {
         state.kpis = state.kpis.filter(k => k.id !== kpi.id);
         state.tasks.forEach(t => { if (t.kpiId === kpi.id) t.kpiId = null; });
         saveState();
@@ -1635,6 +2152,15 @@
     });
   });
 
+  const langSelectEl = document.getElementById('lang-select');
+  if (langSelectEl) {
+    langSelectEl.addEventListener('change', () => {
+      localStorage.setItem(LANG_KEY, langSelectEl.value);
+      location.reload();
+    });
+  }
+
+  applyStaticI18n();
   carryOverOverdueDailyTasks();
   renderAll();
 })();
