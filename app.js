@@ -10,7 +10,7 @@
     ko: {
       'app.title': 'KPI 플래너',
       'app.subtitle': '연간 목표 · 일정 · 실행 계획 관리',
-      'app.metaDesc': '연간 KPI 목표, 일정 달력, 일간·주간·월간 할 일을 한 곳에서 관리하는 무료 웹 플래너입니다. 설치도 로그인도 필요 없습니다.',
+      'app.metaDesc': '제조업·생산현장 KPI, SHE 업무, 수율 관리에도 적합한 무료 KPI 플래너. 연간 목표, 일정 달력, 일간·주간·월간 할 일을 한 곳에서 관리하세요. 설치도 로그인도 필요 없습니다.',
       'tab.kpi': '연간 KPI',
       'tab.calendar': '달력',
       'tab.daily': '일간',
@@ -239,7 +239,7 @@
       'help.p4': '입력한 내용은 이 브라우저 안에만 저장됩니다. 서버로 전송되지 않으니 다른 사람이 볼 수 없지만, 브라우저 데이터를 지우면 함께 사라집니다. 기기를 바꿀 때는 새 기기에서 다시 입력해야 합니다.',
 
       'footer.title': 'KPI 플래너 소개',
-      'footer.desc': 'KPI 플래너는 연간 목표(KPI)와 일정, 일간·주간·월간 할 일을 한 화면에서 관리할 수 있는 무료 웹 플래닝 도구입니다. 설치나 회원가입 없이 브라우저에서 바로 사용할 수 있고, 입력한 데이터는 이 브라우저에만 저장되어 외부로 전송되지 않습니다.',
+      'footer.desc': 'KPI 플래너는 연간 목표(KPI)와 일정, 일간·주간·월간 할 일을 한 화면에서 관리할 수 있는 무료 웹 플래닝 도구입니다. 제조업 생산현장의 SHE 업무나 수율 관리처럼 세부 지표를 다루는 업무에도 적합하며, 설치나 회원가입 없이 브라우저에서 바로 사용할 수 있습니다. 입력한 데이터는 이 브라우저에만 저장되어 외부로 전송되지 않습니다.',
       'footer.f1': 'KPI 목표 등록, 가중치·평가등급표 관리',
       'footer.f2': '여러 날에 걸친 일정도 이어서 표시하는 달력',
       'footer.f3': '일간·주간·월간 할 일 계획과 드래그 순서 변경',
@@ -248,7 +248,7 @@
     en: {
       'app.title': 'KPI Planner',
       'app.subtitle': 'Annual goals · schedule · execution planning',
-      'app.metaDesc': 'A free web planner for annual KPI goals, a schedule calendar, and daily, weekly and monthly to-dos. No install, no sign-up.',
+      'app.metaDesc': 'A free KPI planner for production and SHE teams — manage annual KPI goals, a schedule calendar, and daily, weekly and monthly to-dos in one place. No install, no sign-up.',
       'tab.kpi': 'Annual KPIs',
       'tab.calendar': 'Calendar',
       'tab.daily': 'Daily',
@@ -477,7 +477,7 @@
       'help.p4': 'Everything you enter stays in this browser only. Nothing is sent to a server, so nobody else can see it — but clearing your browser data also clears the planner, and a new device starts empty.',
 
       'footer.title': 'About KPI Planner',
-      'footer.desc': 'KPI Planner is a free web planning tool for tracking annual goals (KPIs), a schedule, and daily, weekly and monthly to-dos in one place. No install or sign-up needed — everything you enter stays in this browser only and is never sent to a server.',
+      'footer.desc': 'KPI Planner is a free web planning tool for tracking annual goals (KPIs), a schedule, and daily, weekly and monthly to-dos in one place. It works well for production and SHE teams tracking detailed metrics like yield, and needs no install or sign-up — everything you enter stays in this browser only and is never sent to a server.',
       'footer.f1': 'KPI goals with weighting and a customisable rating rubric',
       'footer.f2': 'A calendar that shows multi-day events continuously',
       'footer.f3': 'Daily, weekly and monthly task planning with drag-to-reorder',
