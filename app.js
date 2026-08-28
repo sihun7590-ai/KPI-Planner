@@ -20,6 +20,7 @@
       'nav.thisWeek': '이번 주',
       'nav.thisMonth': '이번 달',
       'btn.help': '사용 안내',
+      'btn.settings': '설정',
       'btn.addKpi': '+ 새 KPI',
       'btn.addEvent': '+ 일정 추가',
       'btn.addTask': '+ 할 일 추가',
@@ -40,6 +41,44 @@
       'def.she': 'SHE',
       'tag.deleted': '(삭제된 구분)',
       'tag.newItem': '새 항목',
+
+      'prof.personal': '개인',
+      'prof.personalDesc': '일상 · 건강 · 집안일처럼 개인적인 할 일 위주',
+      'prof.work': '회사',
+      'prof.workDesc': '업무와 회의 중심. KPI 목표 관리도 켤 수 있어요',
+      'prof.study': '공부',
+      'prof.studyDesc': '과제 · 시험 준비 · 강의 일정 관리',
+      'prof.project': '프로젝트',
+      'prof.projectDesc': '기획 · 작업 · 마일스톤 단위로 진행 관리',
+
+      'cat.life': '일상',
+      'cat.health': '건강',
+      'cat.chore': '집안일',
+      'cat.work': '업무',
+      'cat.meeting': '회의',
+      'cat.study': '공부 · 과제',
+      'cat.exam': '시험 준비',
+      'cat.plan': '기획',
+      'cat.build': '작업 · 개발',
+      'evt.appointment': '약속',
+      'evt.workSchedule': '업무 일정',
+      'evt.exam': '시험',
+      'evt.deadline': '과제 마감',
+      'evt.milestone': '마일스톤',
+      'evt.meeting': '회의',
+
+      'ob.title': '어떤 용도로 사용하시나요?',
+      'ob.intro': '선택한 용도에 맞게 기본 구분(카테고리)을 준비해 드려요. 나중에 [설정]에서 언제든 바꿀 수 있습니다.',
+      'ob.kpiQ': 'KPI 목표 관리 기능 사용하기',
+      'ob.kpiHint': '연간 목표(KPI)와 가중치, 평가등급표를 관리하는 탭이 추가됩니다. 필요 없으면 꺼두세요.',
+      'ob.start': '시작하기',
+
+      'set.title': '설정',
+      'set.profile': '사용 용도',
+      'set.profileHint': '용도를 바꿔도 지금까지 입력한 할 일과 일정은 그대로 남습니다.',
+      'set.kpiKeep': 'KPI를 꺼도 등록해둔 KPI는 지워지지 않고, 다시 켜면 그대로 보입니다.',
+      'set.resetCats': '기본 구분을 선택한 용도에 맞게 바꾸기',
+      'set.resetCatsHint': '지금 쓰고 있는 구분 목록이 지워지고 새로 만들어집니다. 기존 할 일에 지정된 구분은 "구분 없음"이 됩니다.',
 
       'alarm.m1': '한 달 전',
       'alarm.w2': '2주 전',
@@ -212,20 +251,20 @@
 
       'help.title': '사용 안내',
       'help.intro': '각 탭이 어떤 역할을 하는지, 어떤 기능을 쓸 수 있는지 정리했습니다.',
-      'help.h1': '1. 연간 KPI',
+      'help.h1': '연간 KPI',
       'help.p1': '올해 달성하고 싶은 목표를 KPI로 등록합니다. "+ 새 KPI"를 눌러 제목, 목표 연도, 설명을 입력하세요.',
       'help.l1a': '<b>진행률</b>: KPI에 업무를 연결하면 완료한 업무 비율로 자동 계산돼요. "수동 설정"으로 바꾸면 슬라이더로 직접 % 조정도 가능해요.',
       'help.l1b': '<b>가중치(%)</b>: 여러 KPI 중 이 KPI가 차지하는 비중을 정할 수 있어요. 전체 KPI 가중치 합이 100%가 되도록 맞추면 좋아요.',
       'help.l1c': '<b>실적 관리</b>: 실제로 달성한 실적을 날짜별로 기록해두는 곳이에요. 기록을 클릭하면 내용을 수정할 수 있어요.',
       'help.l1d': '<b>평가등급표</b>: S·A·B·C처럼 등급 이름을 자유롭게 정하고, 평가 기준마다 등급을 선택해 종합 등급을 계산해요. 평가 기준마다 배점(%)을 입력하면 KPI 가중치에 맞춰 더 정교하게 계산돼요.',
-      'help.h2': '2. 달력',
+      'help.h2': '달력',
       'help.p2': '공사, 기타일정 등 원하는 구분을 직접 만들어 일정을 등록하고 관리합니다.',
       'help.l2a': '<b>구분 관리</b>: 일정 추가 화면의 "구분 관리" 버튼으로 구분 이름과 색상을 자유롭게 추가·수정·삭제할 수 있어요.',
       'help.l2b': '<b>기간이 있는 일정</b>: 시작일과 종료일을 다르게 지정하면 여러 날에 걸쳐 달력에 이어서 표시돼요. 시작·종료 시간도 선택적으로 넣을 수 있어요.',
       'help.l2c': '<b>알림</b>: 한 달 전 ~ 하루 전까지 원하는 시점에 알림을 받을 수 있고, 알림별로 켜고 끌 수 있어요.',
       'help.l2d': '<b>날짜 미정</b>: 아직 날짜를 못 정한 장기 준비 업무는 "날짜 미정"으로 등록하면 [일간] 탭 아래쪽 목록에 모아서 보여줘요.',
       'help.l2e': '일정의 "내 일정에 추가" 버튼으로 일간·주간·월간 할 일로 바로 옮길 수 있어요.',
-      'help.h3': '3. 일간 · 주간 · 월간',
+      'help.h3': '일간 · 주간 · 월간',
       'help.p3': '실제 할 일을 날짜/주/월 단위로 계획하고 체크합니다.',
       'help.l3a': '<b>순서 바꾸기</b>: 항목 왼쪽 손잡이(점 여섯 개)를 누른 채 위아래로 드래그하면 순서가 바뀌어요. 숫자를 직접 정하고 싶으면 항목을 클릭해 우선순위 칸에 숫자를 입력해도 돼요.',
       'help.l3b': '<b>메모 · 목표 시간</b>: 항목을 클릭하면 메모와 "몇 시까지 끝낼지" 목표 시간을 넣을 수 있어요. 둘 다 선택 사항이고, 입력하면 목록에 함께 표시돼요.',
@@ -235,8 +274,10 @@
       'help.l3f': '<b>수정 · 완료 후 이월</b>: 항목을 클릭하면 언제든 수정할 수 있고, 완료된 업무도 클릭해서 날짜를 다른 날로 옮길 수 있어요.',
       'help.l3g': '<b>나눠 담기</b>: 월간 업무의 "주간 분배", 주간 업무의 "일간 분배" 버튼을 누르면 각 주/일에 나눠 등록하도록 추천해줘요.',
       'help.l3h': '<b>주간 업무 요약</b>: [주간] 탭에서 "업무 요약 보기"를 누르면 그 주 구분별 완료 현황을 한눈에 볼 수 있어요. (구분을 선택하지 않은 업무는 요약에서 제외돼요)',
-      'help.h4': '4. 데이터 보관',
-      'help.p4': '입력한 내용은 이 브라우저 안에만 저장됩니다. 서버로 전송되지 않으니 다른 사람이 볼 수 없지만, 브라우저 데이터를 지우면 함께 사라집니다. 기기를 바꿀 때는 새 기기에서 다시 입력해야 합니다.',
+      'help.h4': '설정 · 사용 용도',
+      'help.p4': '헤더의 [설정]에서 사용 용도(개인 · 회사 · 공부 · 프로젝트)를 언제든 바꿀 수 있습니다. 용도에 맞는 기본 구분을 새로 받아올 수도 있고, 회사 용도에서는 KPI 탭을 켜고 끌 수 있습니다.',
+      'help.h5': '데이터 보관',
+      'help.p5': '입력한 내용은 이 브라우저 안에만 저장됩니다. 서버로 전송되지 않으니 다른 사람이 볼 수 없지만, 브라우저 데이터를 지우면 함께 사라집니다. 기기를 바꿀 때는 새 기기에서 다시 입력해야 합니다.',
 
       'footer.title': 'KPI 플래너 소개',
       'footer.desc': 'KPI 플래너는 연간 목표(KPI)와 일정, 일간·주간·월간 할 일을 한 화면에서 관리할 수 있는 무료 웹 플래닝 도구입니다. 제조업 생산현장의 SHE 업무나 수율 관리처럼 세부 지표를 다루는 업무에도 적합하며, 설치나 회원가입 없이 브라우저에서 바로 사용할 수 있습니다. 입력한 데이터는 이 브라우저에만 저장되어 외부로 전송되지 않습니다.',
@@ -258,6 +299,7 @@
       'nav.thisWeek': 'This week',
       'nav.thisMonth': 'This month',
       'btn.help': 'Guide',
+      'btn.settings': 'Settings',
       'btn.addKpi': '+ New KPI',
       'btn.addEvent': '+ Add event',
       'btn.addTask': '+ Add task',
@@ -278,6 +320,44 @@
       'def.she': 'SHE',
       'tag.deleted': '(deleted category)',
       'tag.newItem': 'New item',
+
+      'prof.personal': 'Personal',
+      'prof.personalDesc': 'Everyday life, health and errands',
+      'prof.work': 'Work',
+      'prof.workDesc': 'Tasks and meetings. KPI goal tracking is optional',
+      'prof.study': 'Study',
+      'prof.studyDesc': 'Assignments, exam prep and class schedules',
+      'prof.project': 'Project',
+      'prof.projectDesc': 'Planning, build work and milestones',
+
+      'cat.life': 'Everyday',
+      'cat.health': 'Health',
+      'cat.chore': 'Errands',
+      'cat.work': 'Work',
+      'cat.meeting': 'Meetings',
+      'cat.study': 'Study & assignments',
+      'cat.exam': 'Exam prep',
+      'cat.plan': 'Planning',
+      'cat.build': 'Build & dev',
+      'evt.appointment': 'Appointment',
+      'evt.workSchedule': 'Work schedule',
+      'evt.exam': 'Exam',
+      'evt.deadline': 'Deadline',
+      'evt.milestone': 'Milestone',
+      'evt.meeting': 'Meeting',
+
+      'ob.title': 'What will you use this for?',
+      'ob.intro': 'We\'ll set up matching categories for you. You can change this any time under Settings.',
+      'ob.kpiQ': 'Use KPI goal tracking',
+      'ob.kpiHint': 'Adds a tab for annual goals with weighting and a rating rubric. Leave it off if you don\'t need it.',
+      'ob.start': 'Get started',
+
+      'set.title': 'Settings',
+      'set.profile': 'Used for',
+      'set.profileHint': 'Changing this keeps every task and event you have already entered.',
+      'set.kpiKeep': 'Turning KPIs off hides the tab but keeps your KPIs — turn it back on and they reappear.',
+      'set.resetCats': 'Replace categories with the ones for this use',
+      'set.resetCatsHint': 'Your current category list is deleted and rebuilt. Tasks that used the old categories become uncategorised.',
 
       'alarm.m1': '1 month before',
       'alarm.w2': '2 weeks before',
@@ -450,20 +530,20 @@
 
       'help.title': 'Guide',
       'help.intro': 'What each tab is for, and what you can do in it.',
-      'help.h1': '1. Annual KPIs',
+      'help.h1': 'Annual KPIs',
       'help.p1': 'Register the goals you want to hit this year. Press "+ New KPI" and fill in a title, target year and description.',
       'help.l1a': '<b>Progress</b>: link tasks to a KPI and progress is calculated from how many are done. Switch to "Manual" to set the percentage yourself with a slider.',
       'help.l1b': '<b>Weight (%)</b>: how much this KPI counts relative to the others. Aim for 100% across all KPIs.',
       'help.l1c': '<b>Results</b>: a dated log of what you actually achieved. Click an entry to edit it.',
       'help.l1d': '<b>Rating rubric</b>: name your grades however you like (S·A·B·C, etc.), pick a grade per criterion, and the overall rating is calculated for you. Give each criterion a weight (%) for a more precise score.',
-      'help.h2': '2. Calendar',
+      'help.h2': 'Calendar',
       'help.p2': 'Create your own categories and register events against them.',
       'help.l2a': '<b>Categories</b>: the "Manage categories" button in the event form lets you add, rename, recolour and delete categories.',
       'help.l2b': '<b>Multi-day events</b>: give an event a different end date and it will run continuously across the calendar. Start and end times are optional.',
       'help.l2c': '<b>Reminders</b>: get a heads-up anywhere from a month to a day before, and switch each one on or off.',
       'help.l2d': '<b>Undated</b>: work with no date yet can be filed as "Date not decided" and appears in a list at the bottom of the Daily tab.',
       'help.l2e': 'The "Add to my plan" button moves an event straight into your daily, weekly or monthly list.',
-      'help.h3': '3. Daily · Weekly · Monthly',
+      'help.h3': 'Daily · Weekly · Monthly',
       'help.p3': 'Plan and tick off the actual work, by day, week or month.',
       'help.l3a': '<b>Reordering</b>: grab the handle (six dots) on the left of a row and drag it up or down. You can also click a row and type a priority number.',
       'help.l3b': '<b>Note and finish-by time</b>: click a row to add a note and a target time. Both are optional and show up in the list once filled in.',
@@ -473,8 +553,10 @@
       'help.l3f': '<b>Editing and rescheduling</b>: click any row to edit it — including completed ones, which you can move to another date.',
       'help.l3g': '<b>Splitting</b>: "Split by week" on a monthly task and "Split by day" on a weekly task suggest how to spread the work out.',
       'help.l3h': '<b>Weekly summary</b>: press "Show weekly summary" in the Weekly tab to see that week\'s completion by category. (Uncategorised tasks are excluded.)',
-      'help.h4': '4. Where your data lives',
-      'help.p4': 'Everything you enter stays in this browser only. Nothing is sent to a server, so nobody else can see it — but clearing your browser data also clears the planner, and a new device starts empty.',
+      'help.h4': 'Settings and use case',
+      'help.p4': 'Use the Settings button in the header to switch what you use the planner for (personal, work, study or project). You can pull in fresh categories to match, and on the work profile you can turn the KPI tab on or off.',
+      'help.h5': 'Where your data lives',
+      'help.p5': 'Everything you enter stays in this browser only. Nothing is sent to a server, so nobody else can see it — but clearing your browser data also clears the planner, and a new device starts empty.',
 
       'footer.title': 'About KPI Planner',
       'footer.desc': 'KPI Planner is a free web planning tool for tracking annual goals (KPIs), a schedule, and daily, weekly and monthly to-dos in one place. It works well for production and SHE teams tracking detailed metrics like yield, and needs no install or sign-up — everything you enter stays in this browser only and is never sent to a server.',
@@ -512,14 +594,30 @@
   const monthName = m => (lang === 'ko' ? m + 1 : MONTHS_EN[m]);
   const monthNameShort = m => (lang === 'ko' ? m + 1 : MONTHS_EN_SHORT[m]);
 
-  const DEFAULT_EVENT_TYPES = () => [
-    { id: 'construction', label: t('def.construction'), color: '#a8681f' },
-    { id: 'other', label: t('def.other'), color: '#6b5ca5' },
-  ];
-  const DEFAULT_TASK_CATEGORIES = () => [
-    { id: 'work', label: t('def.work'), color: '#3f6f9c' },
-    { id: 'she', label: t('def.she'), color: '#2c7f8c' },
-  ];
+  // 온보딩에서 고르는 "사용 용도". 용도마다 기본 구분(카테고리)이 다릅니다.
+  const PROFILE_IDS = ['personal', 'work', 'study', 'project'];
+  const PROFILES = {
+    personal: {
+      taskCategories: [['life', 'cat.life', '#3f6f9c'], ['health', 'cat.health', '#2e7d5b'], ['chore', 'cat.chore', '#6b7280']],
+      eventTypes: [['appointment', 'evt.appointment', '#a4508b'], ['other', 'def.other', '#6b5ca5']],
+    },
+    work: {
+      taskCategories: [['work', 'cat.work', '#3f6f9c'], ['meeting', 'cat.meeting', '#2c7f8c']],
+      eventTypes: [['workSchedule', 'evt.workSchedule', '#a8681f'], ['other', 'def.other', '#6b5ca5']],
+    },
+    study: {
+      taskCategories: [['study', 'cat.study', '#3f6f9c'], ['exam', 'cat.exam', '#b04a45']],
+      eventTypes: [['exam', 'evt.exam', '#b04a45'], ['deadline', 'evt.deadline', '#a8681f']],
+    },
+    project: {
+      taskCategories: [['plan', 'cat.plan', '#6b5ca5'], ['build', 'cat.build', '#3f6f9c']],
+      eventTypes: [['milestone', 'evt.milestone', '#2e7d5b'], ['meeting', 'evt.meeting', '#2c7f8c']],
+    },
+  };
+  const profileOf = p => PROFILES[p] || PROFILES.work;
+  const tagsFrom = defs => defs.map(([id, key, color]) => ({ id, label: t(key), color }));
+  const DEFAULT_EVENT_TYPES = p => tagsFrom(profileOf(p).eventTypes);
+  const DEFAULT_TASK_CATEGORIES = p => tagsFrom(profileOf(p).taskCategories);
 
   // 인라인 SVG 아이콘 (이모지 대신 사용해 어느 기기에서나 동일하게 보이도록)
   const svg = (body, size) => `<svg class="ic" viewBox="0 0 16 16" width="${size || 14}" height="${size || 14}" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
@@ -558,9 +656,13 @@
     try {
       const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
       if (raw && Array.isArray(raw.kpis) && Array.isArray(raw.tasks)) {
+        // 온보딩이 생기기 전부터 쓰던 사용자는 지금 화면 그대로 (회사 + KPI 사용).
+        if (!PROFILES[raw.profile]) raw.profile = 'work';
+        if (raw.useKpi == null) raw.useKpi = true;
+        if (raw.onboarded == null) raw.onboarded = true;
         if (!Array.isArray(raw.events)) raw.events = [];
-        if (!Array.isArray(raw.eventTypes) || raw.eventTypes.length === 0) raw.eventTypes = DEFAULT_EVENT_TYPES();
-        if (!Array.isArray(raw.taskCategories) || raw.taskCategories.length === 0) raw.taskCategories = DEFAULT_TASK_CATEGORIES();
+        if (!Array.isArray(raw.eventTypes) || raw.eventTypes.length === 0) raw.eventTypes = DEFAULT_EVENT_TYPES(raw.profile);
+        if (!Array.isArray(raw.taskCategories) || raw.taskCategories.length === 0) raw.taskCategories = DEFAULT_TASK_CATEGORIES(raw.profile);
         raw.events.forEach(ev => {
           if (!ev.startDate) {
             ev.startDate = ev.date || null;
@@ -573,7 +675,37 @@
         return raw;
       }
     } catch (e) { /* ignore */ }
-    return { kpis: [], tasks: [], events: [], eventTypes: DEFAULT_EVENT_TYPES(), taskCategories: DEFAULT_TASK_CATEGORIES() };
+    // 완전히 처음 여는 경우. onboarded=false이면 첫 화면에서 용도 선택 모달이 뜹니다.
+    return {
+      kpis: [], tasks: [], events: [],
+      eventTypes: DEFAULT_EVENT_TYPES('work'),
+      taskCategories: DEFAULT_TASK_CATEGORIES('work'),
+      profile: 'work', useKpi: true, onboarded: false,
+    };
+  }
+
+  // 용도를 적용합니다. resetTags가 true면 기본 구분 목록도 새로 만듭니다.
+  function applyProfile(profile, useKpi, resetTags) {
+    state.profile = PROFILES[profile] ? profile : 'work';
+    state.useKpi = !!useKpi;
+    if (resetTags) {
+      state.taskCategories = DEFAULT_TASK_CATEGORIES(state.profile);
+      state.eventTypes = DEFAULT_EVENT_TYPES(state.profile);
+    }
+  }
+
+  // KPI를 쓰지 않는 용도에서는 KPI 탭 자체를 감춥니다.
+  function applyKpiVisibility() {
+    const show = state.useKpi !== false;
+    const tabBtn = document.querySelector('.tab-btn[data-tab="kpi"]');
+    const panel = document.getElementById('tab-kpi');
+    if (!tabBtn || !panel) return;
+    tabBtn.classList.toggle('hidden', !show);
+    if (show || !tabBtn.classList.contains('active')) return;
+    tabBtn.classList.remove('active');
+    panel.classList.remove('active');
+    document.querySelector('.tab-btn[data-tab="daily"]').classList.add('active');
+    document.getElementById('tab-daily').classList.add('active');
   }
 
   function saveState() {
@@ -1080,7 +1212,11 @@
   const overlay = document.getElementById('modal-overlay');
   const modal = document.getElementById('modal');
 
-  function openModal(html, onMount, extraClass) {
+  // locked 모달(온보딩)은 바깥 클릭이나 Esc로 닫히지 않습니다.
+  let modalLocked = false;
+
+  function openModal(html, onMount, extraClass, locked) {
+    modalLocked = !!locked;
     modal.className = 'modal' + (extraClass ? ' ' + extraClass : '');
     modal.innerHTML = html;
     overlay.classList.remove('hidden');
@@ -1089,6 +1225,11 @@
     if (first) first.focus();
   }
   function closeModal() {
+    if (modalLocked) return;
+    forceCloseModal();
+  }
+  function forceCloseModal() {
+    modalLocked = false;
     overlay.classList.add('hidden');
     modal.innerHTML = '';
   }
@@ -1473,13 +1614,14 @@
           <label>${t('task.fTitle')}</label>
           <input type="text" name="title" required value="${isEdit ? escapeHtml(existingTask.title) : ''}" placeholder="${t('task.fTitlePh')}">
         </div>
+        ${state.useKpi !== false ? `
         <div class="field">
           <label>${t('task.fKpi')}</label>
           <select name="kpiId">
             <option value="">${t('task.fKpiNone')}</option>
             ${kpiOptions}
           </select>
-        </div>
+        </div>` : ''}
         <div class="field">
           <label>${t('task.fNote')}</label>
           <textarea name="note" placeholder="${t('task.fNotePh')}">${isEdit ? escapeHtml(existingTask.note || '') : ''}</textarea>
@@ -1521,7 +1663,8 @@
 
         if (isEdit) {
           existingTask.title = title;
-          existingTask.kpiId = fd.get('kpiId') || null;
+          // KPI 기능이 꺼져 있으면 입력칸이 없으므로 기존 연결을 그대로 둡니다.
+          if (state.useKpi !== false) existingTask.kpiId = fd.get('kpiId') || null;
           existingTask.note = fd.get('note').trim();
           existingTask.dueTime = fd.get('dueTime') || null;
           existingTask.priority = Number(fd.get('priority')) || 1;
@@ -1912,51 +2055,120 @@
   function openEventTypeModal() { openTagManagerModal(t('tag.eventTypes'), state.eventTypes, renderCalendar); }
   function openTaskCategoryModal() { openTagManagerModal(t('tag.taskCategories'), state.taskCategories, renderAll); }
 
+  // ---------- onboarding / settings ----------
+  function profileCardsHtml(selected) {
+    return `<div class="onb-grid">${PROFILE_IDS.map(p => `
+      <button type="button" class="onb-card ${p === selected ? 'selected' : ''}" data-profile="${p}">
+        <span class="onb-card-title">${t('prof.' + p)}</span>
+        <span class="onb-card-desc">${t('prof.' + p + 'Desc')}</span>
+      </button>`).join('')}</div>`;
+  }
+
+  // 카드 선택 + "회사일 때만 KPI 토글 노출" 동작은 온보딩/설정이 똑같아서 함께 씁니다.
+  function wireProfilePicker(root, initial, onPick) {
+    let picked = initial;
+    const kpiField = root.querySelector('[data-role="kpi-field"]');
+    const sync = () => { if (kpiField) kpiField.classList.toggle('hidden', picked !== 'work'); };
+    root.querySelectorAll('.onb-card').forEach(card => card.addEventListener('click', () => {
+      picked = card.dataset.profile;
+      root.querySelectorAll('.onb-card').forEach(c => c.classList.toggle('selected', c === card));
+      sync();
+      if (onPick) onPick(picked);
+    }));
+    sync();
+    return () => picked;
+  }
+
+  function kpiFieldHtml(checked) {
+    return `
+      <div class="field" data-role="kpi-field">
+        <label class="checkbox-label"><input type="checkbox" name="useKpi" ${checked ? 'checked' : ''}> ${t('ob.kpiQ')}</label>
+        <div class="field-hint">${t('ob.kpiHint')}</div>
+      </div>`;
+  }
+
+  function openOnboardingModal() {
+    openModal(`
+      <h2>${t('ob.title')}</h2>
+      <p class="help-intro">${t('ob.intro')}</p>
+      ${profileCardsHtml(null)}
+      ${kpiFieldHtml(true)}
+      <div class="modal-actions">
+        <button type="button" class="btn primary" data-act="start" disabled>${t('ob.start')}</button>
+      </div>
+    `, root => {
+      const startBtn = root.querySelector('[data-act="start"]');
+      const getPicked = wireProfilePicker(root, null, () => { startBtn.disabled = false; });
+      startBtn.addEventListener('click', () => {
+        const profile = getPicked();
+        if (!profile) return;
+        const useKpi = profile === 'work' && root.querySelector('[name="useKpi"]').checked;
+        applyProfile(profile, useKpi, true);
+        state.onboarded = true;
+        saveState();
+        forceCloseModal();
+        applyKpiVisibility();
+        renderAll();
+      });
+    }, 'modal-onboarding', true);
+  }
+
+  function openSettingsModal() {
+    openModal(`
+      <h2>${t('set.title')}</h2>
+      <form id="settings-form">
+        <div class="field">
+          <label>${t('set.profile')}</label>
+          ${profileCardsHtml(state.profile)}
+          <div class="field-hint">${t('set.profileHint')}</div>
+        </div>
+        ${kpiFieldHtml(state.useKpi !== false)}
+        <div class="field-hint" style="margin:-6px 0 14px">${t('set.kpiKeep')}</div>
+        <div class="field">
+          <label class="checkbox-label"><input type="checkbox" name="resetTags"> ${t('set.resetCats')}</label>
+          <div class="field-hint">${t('set.resetCatsHint')}</div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn" data-act="cancel">${t('btn.cancel')}</button>
+          <button type="submit" class="btn primary">${t('btn.save')}</button>
+        </div>
+      </form>
+    `, root => {
+      const getPicked = wireProfilePicker(root, state.profile);
+      root.querySelector('[data-act="cancel"]').addEventListener('click', closeModal);
+      root.querySelector('#settings-form').addEventListener('submit', e => {
+        e.preventDefault();
+        const profile = getPicked();
+        const useKpi = profile === 'work' && root.querySelector('[name="useKpi"]').checked;
+        applyProfile(profile, useKpi, root.querySelector('[name="resetTags"]').checked);
+        saveState();
+        closeModal();
+        applyKpiVisibility();
+        renderAll();
+      });
+    });
+  }
+
   // ---------- help ----------
   function helpModalHtml() {
+    // KPI를 쓰지 않는 용도면 KPI 설명은 빼고, 번호는 남은 항목 기준으로 다시 매깁니다.
+    const sections = [
+      state.useKpi !== false && { key: 'h1', p: 'p1', items: ['l1a', 'l1b', 'l1c', 'l1d'] },
+      { key: 'h2', p: 'p2', items: ['l2a', 'l2b', 'l2c', 'l2d', 'l2e'] },
+      { key: 'h3', p: 'p3', items: ['l3a', 'l3b', 'l3c', 'l3d', 'l3e', 'l3f', 'l3g', 'l3h'] },
+      { key: 'h4', p: 'p4', items: [] },
+      { key: 'h5', p: 'p5', items: [] },
+    ].filter(Boolean);
     return `
       <h2>${t('help.title')}</h2>
       <p class="help-intro">${t('help.intro')}</p>
       <div class="help-content">
+        ${sections.map((s, i) => `
         <section class="help-section">
-          <h3>${t('help.h1')}</h3>
-          <p>${t('help.p1')}</p>
-          <ul>
-            <li>${t('help.l1a')}</li>
-            <li>${t('help.l1b')}</li>
-            <li>${t('help.l1c')}</li>
-            <li>${t('help.l1d')}</li>
-          </ul>
-        </section>
-        <section class="help-section">
-          <h3>${t('help.h2')}</h3>
-          <p>${t('help.p2')}</p>
-          <ul>
-            <li>${t('help.l2a')}</li>
-            <li>${t('help.l2b')}</li>
-            <li>${t('help.l2c')}</li>
-            <li>${t('help.l2d')}</li>
-            <li>${t('help.l2e')}</li>
-          </ul>
-        </section>
-        <section class="help-section">
-          <h3>${t('help.h3')}</h3>
-          <p>${t('help.p3')}</p>
-          <ul>
-            <li>${t('help.l3a')}</li>
-            <li>${t('help.l3b')}</li>
-            <li>${t('help.l3c')}</li>
-            <li>${t('help.l3d')}</li>
-            <li>${t('help.l3e')}</li>
-            <li>${t('help.l3f')}</li>
-            <li>${t('help.l3g')}</li>
-            <li>${t('help.l3h')}</li>
-          </ul>
-        </section>
-        <section class="help-section">
-          <h3>${t('help.h4')}</h3>
-          <p>${t('help.p4')}</p>
-        </section>
+          <h3>${i + 1}. ${t('help.' + s.key)}</h3>
+          <p>${t('help.' + s.p)}</p>
+          ${s.items.length ? `<ul>${s.items.map(k => `<li>${t('help.' + k)}</li>`).join('')}</ul>` : ''}
+        </section>`).join('')}
       </div>
       <div class="modal-actions">
         <button type="button" class="btn primary" data-act="close">${t('btn.close')}</button>
@@ -1978,6 +2190,7 @@
 
   document.getElementById('btn-add-kpi').addEventListener('click', () => openKpiModal(null));
   document.getElementById('btn-help').addEventListener('click', openHelpModal);
+  document.getElementById('btn-settings').addEventListener('click', openSettingsModal);
 
   document.querySelectorAll('[data-add]').forEach(btn => {
     btn.addEventListener('click', () => openTaskModal(btn.dataset.add));
@@ -2175,6 +2388,8 @@
   }
 
   applyStaticI18n();
+  applyKpiVisibility();
   carryOverOverdueDailyTasks();
   renderAll();
+  if (!state.onboarded) openOnboardingModal();
 })();
