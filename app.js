@@ -8,9 +8,10 @@
   // {0}, {1}은 t('key', 값1, 값2) 로 채워집니다.
   const STRINGS = {
     ko: {
-      'app.title': 'KPI 플래너',
-      'app.subtitle': '연간 목표 · 일정 · 실행 계획 관리',
-      'app.metaDesc': '제조업·생산현장 KPI, SHE 업무, 수율 관리에도 적합한 무료 KPI 플래너. 연간 목표, 일정 달력, 일간·주간·월간 할 일을 한 곳에서 관리하세요. 설치도 로그인도 필요 없습니다.',
+      'app.title': '데일리 플래너',
+      'app.pageTitle': '데일리 플래너 | 일간·주간·월간 계획표, 공부·업무 목표 관리 무료 웹',
+      'app.subtitle': '일간 · 주간 · 월간 계획을 한 곳에서',
+      'app.metaDesc': '설치도 회원가입도 없이 브라우저에서 바로 쓰는 무료 플래너. 일간·주간·월간 계획표, 공부 계획, 업무 일정과 KPI 목표까지 한 화면에서 관리하세요.',
       'tab.kpi': '연간 KPI',
       'tab.calendar': '달력',
       'tab.daily': '일간',
@@ -279,17 +280,22 @@
       'help.h5': '데이터 보관',
       'help.p5': '입력한 내용은 이 브라우저 안에만 저장됩니다. 서버로 전송되지 않으니 다른 사람이 볼 수 없지만, 브라우저 데이터를 지우면 함께 사라집니다. 기기를 바꿀 때는 새 기기에서 다시 입력해야 합니다.',
 
-      'footer.title': 'KPI 플래너 소개',
-      'footer.desc': 'KPI 플래너는 연간 목표(KPI)와 일정, 일간·주간·월간 할 일을 한 화면에서 관리할 수 있는 무료 웹 플래닝 도구입니다. 제조업 생산현장의 SHE 업무나 수율 관리처럼 세부 지표를 다루는 업무에도 적합하며, 설치나 회원가입 없이 브라우저에서 바로 사용할 수 있습니다. 입력한 데이터는 이 브라우저에만 저장되어 외부로 전송되지 않습니다.',
-      'footer.f1': 'KPI 목표 등록, 가중치·평가등급표 관리',
-      'footer.f2': '여러 날에 걸친 일정도 이어서 표시하는 달력',
-      'footer.f3': '일간·주간·월간 할 일 계획과 드래그 순서 변경',
-      'footer.f4': '실적 기록 및 수정',
+      'footer.usesTitle': '이렇게 쓸 수 있어요',
+      'footer.u1': '공부 계획표 — 하루 공부량, 주간 학습 계획, 시험·과제 마감 D-day 관리',
+      'footer.u2': '업무 플래너 — 일간·주간·월간 업무 계획, 회의 일정, 연간 목표(KPI)와 평가등급표',
+      'footer.u3': '개인 일정 관리 — 오늘 할 일, 약속과 기념일, 매일 반복되는 습관 체크',
+      'footer.u4': '프로젝트 관리 — 작업 분배, 마일스톤 D-day, 주간 진행 상황 정리',
+      'footer.privacy': '설치나 회원가입이 필요 없고, 입력한 내용은 이 브라우저에만 저장되어 외부로 전송되지 않습니다.',
+
+      'up.dday': 'D-DAY',
+      'up.ddayLeft': 'D-{0}',
+      'up.ddayPast': 'D+{0}',
     },
     en: {
-      'app.title': 'KPI Planner',
-      'app.subtitle': 'Annual goals · schedule · execution planning',
-      'app.metaDesc': 'A free KPI planner for production and SHE teams — manage annual KPI goals, a schedule calendar, and daily, weekly and monthly to-dos in one place. No install, no sign-up.',
+      'app.title': 'Daily Planner',
+      'app.pageTitle': 'Daily Planner | Free daily, weekly and monthly planner for study and work',
+      'app.subtitle': 'Daily · weekly · monthly plans in one place',
+      'app.metaDesc': 'A free planner that runs in your browser with no install and no sign-up. Keep daily, weekly and monthly plans, study schedules, work events and KPI goals on one screen.',
       'tab.kpi': 'Annual KPIs',
       'tab.calendar': 'Calendar',
       'tab.daily': 'Daily',
@@ -558,12 +564,129 @@
       'help.h5': 'Where your data lives',
       'help.p5': 'Everything you enter stays in this browser only. Nothing is sent to a server, so nobody else can see it — but clearing your browser data also clears the planner, and a new device starts empty.',
 
-      'footer.title': 'About KPI Planner',
-      'footer.desc': 'KPI Planner is a free web planning tool for tracking annual goals (KPIs), a schedule, and daily, weekly and monthly to-dos in one place. It works well for production and SHE teams tracking detailed metrics like yield, and needs no install or sign-up — everything you enter stays in this browser only and is never sent to a server.',
-      'footer.f1': 'KPI goals with weighting and a customisable rating rubric',
-      'footer.f2': 'A calendar that shows multi-day events continuously',
-      'footer.f3': 'Daily, weekly and monthly task planning with drag-to-reorder',
-      'footer.f4': 'A dated log of results you can edit any time',
+      'footer.usesTitle': 'What people use it for',
+      'footer.u1': 'A study planner — daily study load, weekly plans, and a countdown to every exam and deadline',
+      'footer.u2': 'A work planner — daily, weekly and monthly task plans, meetings, annual KPI goals and rating rubrics',
+      'footer.u3': 'Personal planning — today\'s to-dos, appointments and birthdays, and daily habits to tick off',
+      'footer.u4': 'Project tracking — splitting up work, milestone countdowns and weekly progress',
+      'footer.privacy': 'No install and no sign-up, and everything you enter stays in this browser — it is never sent to a server.',
+
+      'up.dday': 'D-DAY',
+      'up.ddayLeft': 'D-{0}',
+      'up.ddayPast': 'D+{0}',
+    },
+  };
+
+  // 사용 용도별로 달라지는 문구. 같은 화면이라도 부르는 이름과 예시가 달라야
+  // "회사용 도구"처럼 보이지 않습니다. pt()로 꺼내 쓰고, 없으면 work를 씁니다.
+  const PROFILE_STRINGS = {
+    ko: {
+      personal: {
+        subtitle: '오늘 할 일과 약속을 한 곳에서',
+        addTask: '+ 할 일 추가',
+        taskEmpty: '오늘 할 일이 없습니다. "+ 할 일 추가"로 적어보세요.',
+        taskTitlePh: '예: 장보기, 30분 걷기',
+        eventTitlePh: '예: 치과 예약, 친구 생일',
+        sumHead: '이번 주 돌아보기',
+        upTitle: '다가오는 약속',
+        upEmpty: '예정된 약속이 없습니다.',
+        footerTitle: '개인 일정 관리용 무료 플래너',
+        footerDesc: '데일리 플래너는 오늘 할 일, 이번 주 계획, 약속과 기념일을 한 화면에서 관리하는 무료 웹 플래너입니다. 앱 설치나 회원가입 없이 브라우저에서 바로 쓸 수 있고, 적어둔 내용은 이 브라우저에만 저장되어 외부로 나가지 않습니다.',
+        footerItems: ['일상 · 건강 · 집안일 구분으로 나눠 담는 할 일 목록', '약속과 기념일을 한눈에 보는 달력', '못 끝낸 일은 다음 날로 자동 이월', '매일 · 매주 반복되는 일 자동 등록'],
+      },
+      work: {
+        subtitle: '업무 일정과 목표를 한 곳에서',
+        addTask: '+ 업무 추가',
+        taskEmpty: '등록된 업무가 없습니다. "+ 업무 추가"로 오늘 할 일을 적어보세요.',
+        taskTitlePh: '예: 주간 보고서 작성',
+        eventTitlePh: '예: 부서 정기회의, 설비 점검',
+        sumHead: '주간 업무 요약',
+        upTitle: '다가오는 일정',
+        upEmpty: '예정된 일정이 없습니다.',
+        footerTitle: '업무 일정과 KPI를 함께 쓰는 무료 플래너',
+        footerDesc: '데일리 플래너는 일간·주간·월간 업무 계획과 일정, 연간 목표(KPI)를 한 화면에서 관리하는 무료 웹 플래너입니다. 제조업 생산현장의 SHE 업무나 수율 관리처럼 세부 지표를 다루는 업무에도 맞고, 설치나 회원가입 없이 바로 쓸 수 있습니다.',
+        footerItems: ['연간 목표(KPI) 등록과 가중치 · 평가등급표 관리', '여러 날에 걸친 일정도 이어서 보여주는 달력', '구분별 주간 업무 요약으로 한 주 실적 정리', '실적 기록 및 수정'],
+      },
+      study: {
+        subtitle: '과제와 시험 준비를 한 곳에서',
+        addTask: '+ 할 일 추가',
+        taskEmpty: '오늘 공부할 내용이 없습니다. "+ 할 일 추가"로 계획을 세워보세요.',
+        taskTitlePh: '예: 3단원 복습, 과제 초안 쓰기',
+        eventTitlePh: '예: 중간고사, 리포트 제출',
+        sumHead: '주간 학습 요약',
+        upTitle: '시험 · 마감 D-day',
+        upEmpty: '등록된 시험이나 마감이 없습니다. [달력]에서 추가해보세요.',
+        footerTitle: '공부 계획표로 쓰는 무료 웹 플래너',
+        footerDesc: '데일리 플래너는 하루 공부량, 주간 학습 계획, 시험과 과제 마감을 한 화면에서 관리하는 무료 스터디 플래너입니다. 시험까지 며칠 남았는지 D-day로 바로 보여주고, 앱 설치나 회원가입 없이 브라우저에서 바로 쓸 수 있습니다.',
+        footerItems: ['시험 · 과제 마감까지 남은 날짜를 D-day로 표시', '과목이나 공부 · 시험 준비로 나눠 담는 할 일 목록', '월간 계획을 주간으로, 주간을 일간으로 나눠 담기', '한 주 동안 실제로 끝낸 공부량 요약'],
+      },
+      project: {
+        subtitle: '작업과 마일스톤을 한 곳에서',
+        addTask: '+ 작업 추가',
+        taskEmpty: '등록된 작업이 없습니다. "+ 작업 추가"로 할 일을 쪼개보세요.',
+        taskTitlePh: '예: 화면 설계 초안, 1차 QA',
+        eventTitlePh: '예: 1차 릴리스, 중간 점검 회의',
+        sumHead: '주간 진행 요약',
+        upTitle: '다가오는 마일스톤',
+        upEmpty: '등록된 마일스톤이 없습니다. [달력]에서 추가해보세요.',
+        footerTitle: '프로젝트 일정 관리용 무료 플래너',
+        footerDesc: '데일리 플래너는 프로젝트 작업과 마일스톤, 일간·주간·월간 진행 계획을 한 화면에서 관리하는 무료 웹 플래너입니다. 마감까지 남은 날짜를 D-day로 보여주고, 설치나 회원가입 없이 브라우저에서 바로 쓸 수 있습니다.',
+        footerItems: ['마일스톤까지 남은 날짜를 D-day로 표시', '기획 · 작업 구분으로 나눠 담는 작업 목록', '월간 작업을 주 단위로, 주간 작업을 일 단위로 분배', '한 주 동안 끝낸 작업 진행 요약'],
+      },
+    },
+    en: {
+      personal: {
+        subtitle: 'Today\'s to-dos and plans in one place',
+        addTask: '+ Add task',
+        taskEmpty: 'Nothing for today yet. Use "+ Add task" to jot something down.',
+        taskTitlePh: 'e.g. Groceries, 30 min walk',
+        eventTitlePh: 'e.g. Dentist, a friend\'s birthday',
+        sumHead: 'Your week in review',
+        upTitle: 'Coming up',
+        upEmpty: 'Nothing coming up.',
+        footerTitle: 'A free planner for everyday life',
+        footerDesc: 'Daily Planner keeps today\'s to-dos, this week\'s plans, appointments and birthdays on one screen. There is no app to install and no sign-up — everything you write stays in this browser and never leaves it.',
+        footerItems: ['To-do lists split into everyday, health and errands', 'A calendar for appointments and birthdays', 'Unfinished tasks roll over to the next day on their own', 'Repeating daily and weekly tasks filled in for you'],
+      },
+      work: {
+        subtitle: 'Work schedule and goals in one place',
+        addTask: '+ Add task',
+        taskEmpty: 'No tasks yet. Use "+ Add task" to plan your day.',
+        taskTitlePh: 'e.g. Write the weekly report',
+        eventTitlePh: 'e.g. Team meeting, equipment check',
+        sumHead: 'Weekly summary',
+        upTitle: 'Coming up',
+        upEmpty: 'Nothing coming up.',
+        footerTitle: 'A free planner for work schedules and KPIs',
+        footerDesc: 'Daily Planner keeps daily, weekly and monthly work plans, your schedule and annual KPI goals on one screen. It suits teams tracking detailed metrics — production, SHE or yield work included — and needs no install or sign-up.',
+        footerItems: ['Annual KPI goals with weighting and a rating rubric', 'A calendar that shows multi-day events continuously', 'A weekly summary of finished work by category', 'A dated log of results you can edit any time'],
+      },
+      study: {
+        subtitle: 'Assignments and exam prep in one place',
+        addTask: '+ Add task',
+        taskEmpty: 'Nothing to study today. Use "+ Add task" to plan it out.',
+        taskTitlePh: 'e.g. Review chapter 3, draft the essay',
+        eventTitlePh: 'e.g. Midterm exam, report due',
+        sumHead: 'Weekly study summary',
+        upTitle: 'Exams and deadlines',
+        upEmpty: 'No exams or deadlines yet. Add them from the Calendar tab.',
+        footerTitle: 'A free study planner in your browser',
+        footerDesc: 'Daily Planner keeps your daily study load, weekly study plan, exams and assignment deadlines on one screen. It counts down the days to each exam, and needs no app install and no sign-up.',
+        footerItems: ['A countdown to every exam and assignment deadline', 'To-do lists split by subject or by study and exam prep', 'Split a monthly plan into weeks, and a week into days', 'A summary of what you actually finished each week'],
+      },
+      project: {
+        subtitle: 'Tasks and milestones in one place',
+        addTask: '+ Add task',
+        taskEmpty: 'No tasks yet. Use "+ Add task" to break the work down.',
+        taskTitlePh: 'e.g. Draft the screen layout, first QA pass',
+        eventTitlePh: 'e.g. First release, checkpoint review',
+        sumHead: 'Weekly progress summary',
+        upTitle: 'Upcoming milestones',
+        upEmpty: 'No milestones yet. Add them from the Calendar tab.',
+        footerTitle: 'A free planner for project schedules',
+        footerDesc: 'Daily Planner keeps project tasks, milestones and daily, weekly and monthly progress plans on one screen. It counts down the days to every deadline, and needs no install and no sign-up.',
+        footerItems: ['A countdown to every milestone', 'Task lists split into planning and build work', 'Split monthly work into weeks, and weekly work into days', 'A weekly summary of what actually shipped'],
+      },
     },
   };
 
@@ -583,6 +706,14 @@
     return s;
   }
 
+  // 현재 사용 용도에 맞는 문구. state가 아직 없는 시점에는 호출하지 않습니다.
+  function pt(key) {
+    const byLang = PROFILE_STRINGS[lang] || PROFILE_STRINGS.en;
+    const p = state && state.profile;
+    const v = (byLang[p] || byLang.work)[key];
+    return v != null ? v : (PROFILE_STRINGS.en[p] || PROFILE_STRINGS.en.work)[key];
+  }
+
   const MONTHS_EN = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   const MONTHS_EN_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const WEEKDAYS = {
@@ -597,21 +728,27 @@
   // 온보딩에서 고르는 "사용 용도". 용도마다 기본 구분(카테고리)이 다릅니다.
   const PROFILE_IDS = ['personal', 'work', 'study', 'project'];
   const PROFILES = {
+    // landingTab: 처음 열 때 보여줄 탭 / weeklySummary: 주간 요약 패널 사용 여부
+    // countdown: 다가오는 일정을 D-day로 보여줄지 (시험·마감이 중요한 용도만)
     personal: {
       taskCategories: [['life', 'cat.life', '#3f6f9c'], ['health', 'cat.health', '#2e7d5b'], ['chore', 'cat.chore', '#6b7280']],
       eventTypes: [['appointment', 'evt.appointment', '#a4508b'], ['other', 'def.other', '#6b5ca5']],
+      landingTab: 'daily', weeklySummary: false, countdown: false,
     },
     work: {
       taskCategories: [['work', 'cat.work', '#3f6f9c'], ['meeting', 'cat.meeting', '#2c7f8c']],
       eventTypes: [['workSchedule', 'evt.workSchedule', '#a8681f'], ['other', 'def.other', '#6b5ca5']],
+      landingTab: null, weeklySummary: true, countdown: false,
     },
     study: {
       taskCategories: [['study', 'cat.study', '#3f6f9c'], ['exam', 'cat.exam', '#b04a45']],
       eventTypes: [['exam', 'evt.exam', '#b04a45'], ['deadline', 'evt.deadline', '#a8681f']],
+      landingTab: 'daily', weeklySummary: true, countdown: true,
     },
     project: {
       taskCategories: [['plan', 'cat.plan', '#6b5ca5'], ['build', 'cat.build', '#3f6f9c']],
       eventTypes: [['milestone', 'evt.milestone', '#2e7d5b'], ['meeting', 'evt.meeting', '#2c7f8c']],
+      landingTab: 'monthly', weeklySummary: true, countdown: true,
     },
   };
   const profileOf = p => PROFILES[p] || PROFILES.work;
@@ -692,6 +829,20 @@
       state.taskCategories = DEFAULT_TASK_CATEGORIES(state.profile);
       state.eventTypes = DEFAULT_EVENT_TYPES(state.profile);
     }
+  }
+
+  // 헤더 문구와 "추가" 버튼 이름은 용도마다 다릅니다.
+  function applyProfileChrome() {
+    const sub = document.querySelector('.brand-sub');
+    if (sub) sub.textContent = pt('subtitle');
+    document.querySelectorAll('[data-add]').forEach(b => { b.textContent = pt('addTask'); });
+  }
+
+  function goToTab(name) {
+    const btn = document.querySelector(`.tab-btn[data-tab="${name}"]`);
+    if (!btn || btn.classList.contains('hidden')) return;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `tab-${name}`));
   }
 
   // KPI를 쓰지 않는 용도에서는 KPI 탭 자체를 감춥니다.
@@ -965,7 +1116,7 @@
 
     const listEl = document.getElementById(`${type}-list`);
     if (tasks.length === 0) {
-      listEl.innerHTML = `<div class="empty-state">${t('task.empty')}</div>`;
+      listEl.innerHTML = `<div class="empty-state">${escapeHtml(pt('taskEmpty'))}</div>`;
       return;
     }
     const sorted = [...tasks].sort((a, b) => {
@@ -1009,6 +1160,14 @@
   function renderWeeklySummaryPanel() {
     const panel = document.getElementById('weekly-summary-panel');
     const btn = document.getElementById('btn-weekly-summary-toggle');
+    // 개인 용도에서는 주간 요약을 쓰지 않아 버튼째 숨깁니다.
+    if (!profileOf(state.profile).weeklySummary) {
+      btn.classList.add('hidden');
+      panel.classList.add('hidden');
+      panel.innerHTML = '';
+      return;
+    }
+    btn.classList.remove('hidden');
     if (!weeklySummaryOpen) {
       panel.classList.add('hidden');
       panel.innerHTML = '';
@@ -1048,7 +1207,7 @@
     const rangeLabel = `${monthNameShort(monday.getMonth())} ${monday.getDate()} - ${monthNameShort(fri.getMonth())} ${fri.getDate()}`;
     const sectionsHtml = state.taskCategories.map((c, i) => section(`${i + 1}. ${escapeHtml(c.label)}`, weekTasks.filter(x => x.category === c.id))).join('');
     panel.innerHTML = `
-      <div class="summary-panel-head">${t('sum.head')}<span class="summary-range">${t('sum.range', rangeLabel)}</span></div>
+      <div class="summary-panel-head">${escapeHtml(pt('sumHead'))}<span class="summary-range">${t('sum.range', rangeLabel)}</span></div>
       ${sectionsHtml}
     `;
   }
@@ -1091,6 +1250,60 @@
           </div>`;
         }).join('')}
       </div>`;
+  }
+
+  // ---------- upcoming events (D-day) ----------
+  function ddayLabel(dateKey) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const n = Math.round((new Date(dateKey + 'T00:00:00') - today) / 86400000);
+    if (n === 0) return { text: t('up.dday'), soon: true };
+    if (n > 0) return { text: t('up.ddayLeft', n), soon: n <= 7 };
+    return { text: t('up.ddayPast', -n), soon: false };
+  }
+
+  // 시험·마감이 중요한 용도(공부/프로젝트)에서만 [일간] 탭 위에 D-day를 띄웁니다.
+  function renderUpcomingEvents() {
+    const section = document.getElementById('upcoming-section');
+    if (!section) return;
+    if (!profileOf(state.profile).countdown) {
+      section.classList.add('hidden');
+      section.innerHTML = '';
+      return;
+    }
+    section.classList.remove('hidden');
+    const todayKey = dateStr(new Date());
+    const upcoming = state.events
+      .filter(ev => ev.startDate && (ev.endDate || ev.startDate) >= todayKey)
+      .sort((a, b) => a.startDate.localeCompare(b.startDate))
+      .slice(0, 5);
+    const rows = upcoming.length
+      ? upcoming.map(ev => {
+          const type = eventTypeById(ev.type);
+          const d = ddayLabel(ev.startDate);
+          return `
+          <div class="upcoming-row" data-id="${ev.id}">
+            <span class="dday-badge ${d.soon ? 'soon' : ''}">${d.text}</span>
+            <span class="calendar-chip" style="cursor:default;background:${type.color}">${escapeHtml(type.label)}</span>
+            <span class="upcoming-title">${escapeHtml(ev.title)}</span>
+            <span class="summary-date">${ev.startDate}</span>
+          </div>`;
+        }).join('')
+      : `<div class="empty-state">${pt('upEmpty')}</div>`;
+    section.innerHTML = `
+      <div class="section-divider"></div>
+      <div class="panel-head"><h2 class="section-title">${escapeHtml(pt('upTitle'))}</h2></div>
+      <div class="upcoming-list">${rows}</div>`;
+  }
+
+  // 소개란도 용도에 따라 바뀝니다. (index.html의 기본 문구는 크롤러용 고정 문구)
+  function renderFooter() {
+    const titleEl = document.getElementById('footer-title');
+    if (!titleEl) return;
+    titleEl.textContent = pt('footerTitle');
+    document.getElementById('footer-desc').textContent = pt('footerDesc');
+    document.getElementById('footer-features').innerHTML =
+      pt('footerItems').map(x => `<li>${escapeHtml(x)}</li>`).join('');
   }
 
   function renderUndatedEvents() {
@@ -1173,6 +1386,7 @@
     document.getElementById('calendar-grid').innerHTML = weekdayHeader + cellsHtml;
 
     renderUndatedEvents();
+    renderUpcomingEvents();
     renderAlarmBanner();
   }
 
@@ -1183,6 +1397,8 @@
     renderWeeklySummaryPanel();
     renderPlanner('monthly');
     renderCalendar();
+    renderUpcomingEvents();
+    renderFooter();
   }
 
   function escapeHtml(s) {
@@ -1194,7 +1410,7 @@
   // 여기서 한 번에 채워 넣습니다. 언어를 바꾸면 페이지를 새로고침해서 다시 채웁니다.
   function applyStaticI18n() {
     document.documentElement.lang = lang;
-    document.title = t('app.title');
+    document.title = t('app.pageTitle');
     document.querySelectorAll('[data-i18n]').forEach(el => {
       el.textContent = t(el.getAttribute('data-i18n'));
     });
@@ -1612,7 +1828,7 @@
       <form id="task-form">
         <div class="field">
           <label>${t('task.fTitle')}</label>
-          <input type="text" name="title" required value="${isEdit ? escapeHtml(existingTask.title) : ''}" placeholder="${t('task.fTitlePh')}">
+          <input type="text" name="title" required value="${isEdit ? escapeHtml(existingTask.title) : ''}" placeholder="${escapeHtml(pt('taskTitlePh'))}">
         </div>
         ${state.useKpi !== false ? `
         <div class="field">
@@ -1795,7 +2011,7 @@
       <form id="event-form">
         <div class="field">
           <label>${t('ev.fTitle')}</label>
-          <input type="text" name="title" required value="${isEdit ? escapeHtml(existing.title) : ''}" placeholder="${t('ev.fTitlePh')}">
+          <input type="text" name="title" required value="${isEdit ? escapeHtml(existing.title) : ''}" placeholder="${escapeHtml(pt('eventTitlePh'))}">
         </div>
         <div class="field">
           <label>${t('ev.fType')}</label>
@@ -2108,6 +2324,8 @@
         saveState();
         forceCloseModal();
         applyKpiVisibility();
+        applyProfileChrome();
+        if (profileOf(profile).landingTab) goToTab(profileOf(profile).landingTab);
         renderAll();
       });
     }, 'modal-onboarding', true);
@@ -2144,6 +2362,7 @@
         saveState();
         closeModal();
         applyKpiVisibility();
+        applyProfileChrome();
         renderAll();
       });
     });
@@ -2389,6 +2608,8 @@
 
   applyStaticI18n();
   applyKpiVisibility();
+  applyProfileChrome();
+  if (profileOf(state.profile).landingTab) goToTab(profileOf(state.profile).landingTab);
   carryOverOverdueDailyTasks();
   renderAll();
   if (!state.onboarded) openOnboardingModal();

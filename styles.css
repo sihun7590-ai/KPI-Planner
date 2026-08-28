@@ -298,6 +298,53 @@ body {
   .onb-grid { grid-template-columns: 1fr; }
 }
 
+/* ============================================================
+   Upcoming events with a D-day countdown (study / project)
+   ============================================================ */
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.upcoming-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.upcoming-title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dday-badge {
+  flex-shrink: 0;
+  min-width: 52px;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.dday-badge.soon {
+  background: var(--danger-soft);
+  border-color: transparent;
+  color: var(--danger);
+}
+
 .site-footer {
   margin-top: 56px;
   padding-top: 20px;
@@ -320,11 +367,21 @@ body {
 }
 
 .site-footer-list {
-  margin: 0;
+  margin: 0 0 18px;
   padding-left: 18px;
   font-size: 12.5px;
   line-height: 1.8;
   color: var(--text-muted);
+}
+
+.site-footer h2 + .site-footer-list { margin-top: 0; }
+
+.site-footer-note {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin: 0;
+  max-width: 640px;
 }
 
 /* ============================================================
