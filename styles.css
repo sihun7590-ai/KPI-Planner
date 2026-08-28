@@ -299,6 +299,119 @@ body {
 }
 
 /* ============================================================
+   Left sidebar — filter the task lists by category
+   ============================================================ */
+.app-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.app-body > main {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar {
+  width: 172px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 16px;
+}
+
+.side-head {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 8px 8px;
+}
+
+.side-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-bottom: 10px;
+}
+
+.side-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-2);
+  cursor: pointer;
+  text-align: left;
+}
+
+.side-item:hover { background: var(--surface-2); }
+
+.side-item.active {
+  background: var(--primary-soft);
+  color: var(--accent-text);
+  font-weight: 700;
+}
+
+.side-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.side-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.side-count {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.side-item.active .side-count { color: var(--accent-text); }
+
+.side-manage { width: 100%; }
+
+/* Narrow screens: the sidebar becomes a scrollable row above the list */
+@media (max-width: 720px) {
+  .app-body { display: block; }
+  .sidebar {
+    width: auto;
+    position: static;
+    margin-bottom: 16px;
+    padding-bottom: 4px;
+  }
+  .side-head { display: none; }
+  .side-list {
+    flex-direction: row;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .side-item {
+    width: auto;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+    background: var(--surface);
+  }
+  /* 좁은 화면에서는 숨깁니다. 구분 관리는 할 일 추가 창에도 있습니다. */
+  .sidebar .side-manage { display: none; }
+}
+
+/* ============================================================
    Upcoming events with a D-day countdown (study / project)
    ============================================================ */
 .upcoming-list {

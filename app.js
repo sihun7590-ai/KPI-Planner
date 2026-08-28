@@ -35,6 +35,9 @@
       'btn.edit': '수정',
       'section.undated': '날짜 미정 · 장기 준비 업무',
       'lang.aria': '언어 선택',
+      'side.title': '구분별 보기',
+      'side.all': '전체',
+      'side.aria': '구분 필터',
 
       'def.construction': '공사',
       'def.other': '기타일정',
@@ -161,6 +164,7 @@
       'rub.deleteCrit': '이 평가 기준을 삭제할까요?',
 
       'task.empty': '등록된 할 일이 없습니다.',
+      'task.emptyFiltered': '"{0}"에 해당하는 항목이 없습니다.',
       'task.summary': '총 <b>{0}개</b> · 완료 <b>{1}개</b> ({2}%)',
       'task.dragTip': '드래그해서 순서 바꾸기',
       'task.dueTitle': '목표 시간',
@@ -319,6 +323,9 @@
       'btn.edit': 'Edit',
       'section.undated': 'Undated · long-term preparation',
       'lang.aria': 'Language',
+      'side.title': 'By category',
+      'side.all': 'All',
+      'side.aria': 'Category filter',
 
       'def.construction': 'Construction',
       'def.other': 'Other',
@@ -445,6 +452,7 @@
       'rub.deleteCrit': 'Delete this criterion?',
 
       'task.empty': 'No tasks yet.',
+      'task.emptyFiltered': 'Nothing in "{0}".',
       'task.summary': '<b>{0}</b> total · <b>{1}</b> done ({2}%)',
       'task.dragTip': 'Drag to reorder',
       'task.dueTitle': 'Finish by',
@@ -788,6 +796,30 @@
     calendar: new Date(),
   };
   let weeklySummaryOpen = (new Date().getDay() === 5); // 금요일이면 기본으로 펼침
+  let activeTabName = 'kpi';
+
+  // 왼쪽 구분 필터. 빈 값이면 전체, FILTER_NONE이면 구분을 지정하지 않은 항목만.
+  const FILTER_NONE = '__none__';
+  function taskMatchesFilter(task) {
+    const f = state.filterCategory;
+    if (!f) return true;
+    if (f === FILTER_NONE) return !task.category;
+    return task.category === f;
+  }
+  // 필터로 잡아둔 구분이 삭제됐으면 전체로 되돌립니다. 목록을 그리기 전에 불러야
+  // 지워진 구분으로 걸러진 빈 목록이 잠깐 보이는 일이 없습니다.
+  function pruneFilter() {
+    const f = state.filterCategory;
+    if (f && f !== FILTER_NONE && !state.taskCategories.some(c => c.id === f)) {
+      state.filterCategory = null;
+    }
+  }
+  function activeFilterLabel() {
+    const f = state.filterCategory;
+    if (f === FILTER_NONE) return t('task.noCategory');
+    const cat = state.taskCategories.find(c => c.id === f);
+    return cat ? cat.label : t('side.all');
+  }
 
   function loadState() {
     try {
@@ -817,7 +849,7 @@
       kpis: [], tasks: [], events: [],
       eventTypes: DEFAULT_EVENT_TYPES('work'),
       taskCategories: DEFAULT_TASK_CATEGORIES('work'),
-      profile: 'work', useKpi: true, onboarded: false,
+      profile: 'work', useKpi: true, onboarded: false, filterCategory: null,
     };
   }
 
@@ -843,6 +875,7 @@
     if (!btn || btn.classList.contains('hidden')) return;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `tab-${name}`));
+    activeTabName = name;
   }
 
   // KPI를 쓰지 않는 용도에서는 KPI 탭 자체를 감춥니다.
@@ -857,6 +890,7 @@
     panel.classList.remove('active');
     document.querySelector('.tab-btn[data-tab="daily"]').classList.add('active');
     document.getElementById('tab-daily').classList.add('active');
+    activeTabName = 'daily';
   }
 
   function saveState() {
@@ -926,15 +960,23 @@
   // ---------- overdue daily task carry-over ----------
   function carryOverOverdueDailyTasks() {
     const todayKey = dateStr(new Date());
-    let changed = false;
+    const moved = [];
     state.tasks.forEach(t => {
       if (t.planType === 'daily' && !t.done && t.scopeKey < todayKey) {
         if (!t.carriedFrom) t.carriedFrom = t.scopeKey;
         t.scopeKey = todayKey;
-        changed = true;
+        t.dueTime = null; // 어제 기준 목표 시간은 의미가 없으므로 비웁니다.
+        moved.push(t);
       }
     });
-    if (changed) saveState();
+    if (moved.length === 0) return;
+    // 넘어온 업무를 1번부터 채우고, 원래 오늘 있던 업무를 그 뒤로 밉니다.
+    const movedIds = new Set(moved.map(t => t.id));
+    const already = tasksIn('daily', todayKey).filter(t => !movedIds.has(t.id)).sort(byPriority);
+    moved.sort(byPriority).forEach((t, i) => { t.priority = i + 1; });
+    already.forEach((t, i) => { t.priority = moved.length + i + 1; });
+    normalizePriorities('daily', todayKey);
+    saveState();
   }
 
   // ---------- KPI progress ----------
@@ -987,31 +1029,54 @@
   }
 
   // ---------- priority helpers ----------
+  const byPriority = (a, b) => (a.priority ?? Infinity) - (b.priority ?? Infinity) || a.createdAt - b.createdAt;
+
+  function tasksIn(planType, scopeKey) {
+    return state.tasks.filter(t => t.planType === planType && t.scopeKey === scopeKey);
+  }
+
+  // 한 날짜(또는 주/월) 안의 번호를 1..n으로 다시 매깁니다. 끝낸 업무가 앞 번호를
+  // 그대로 차지하므로, 1·2번을 끝냈다면 남은 업무는 3번부터 이어집니다.
+  function normalizePriorities(planType, scopeKey) {
+    const list = tasksIn(planType, scopeKey);
+    const done = list.filter(t => t.done).sort(byPriority);
+    const open = list.filter(t => !t.done).sort(byPriority);
+    done.concat(open).forEach((t, i) => { t.priority = i + 1; });
+  }
+
   function defaultNextPriorityFor(planType, scopeKey) {
-    const count = state.tasks.filter(t => t.planType === planType && t.scopeKey === scopeKey).length;
-    return count + 1;
+    return tasksIn(planType, scopeKey).length + 1;
+  }
+  function scopeKeyFor(planType) {
+    const pointer = pointers[planType];
+    if (planType === 'daily') return dateStr(pointer);
+    if (planType === 'weekly') return dateStr(mondayOf(pointer));
+    return monthStr(pointer);
   }
   function defaultNextPriority(planType) {
-    const pointer = pointers[planType];
-    let scopeKey;
-    if (planType === 'daily') scopeKey = dateStr(pointer);
-    else if (planType === 'weekly') scopeKey = dateStr(mondayOf(pointer));
-    else scopeKey = monthStr(pointer);
-    return defaultNextPriorityFor(planType, scopeKey);
+    return defaultNextPriorityFor(planType, scopeKeyFor(planType));
   }
+
+  // 이미 쓰고 있는 번호를 지정하면 그 자리에 끼워 넣고 뒤 업무를 한 칸씩 밉니다.
+  function insertAtPriority(task, wanted) {
+    const others = tasksIn(task.planType, task.scopeKey).filter(t => t.id !== task.id).sort(byPriority);
+    const pos = Math.min(Math.max(Number(wanted) || 1, 1), others.length + 1);
+    others.splice(pos - 1, 0, task);
+    others.forEach((t, i) => { t.priority = i + 1; });
+    normalizePriorities(task.planType, task.scopeKey);
+  }
+
   function reorderTask(taskId, targetId, placeAfter) {
     const task = state.tasks.find(t => t.id === taskId);
     const target = state.tasks.find(t => t.id === targetId);
     if (!task || !target || task.id === target.id) return;
-    const siblings = state.tasks
-      .filter(t => t.planType === task.planType && t.scopeKey === task.scopeKey && !t.done)
-      .sort((a, b) => (a.priority ?? Infinity) - (b.priority ?? Infinity) || a.createdAt - b.createdAt);
+    const siblings = tasksIn(task.planType, task.scopeKey).filter(t => !t.done).sort(byPriority);
     const without = siblings.filter(t => t.id !== task.id);
     const targetIdx = without.findIndex(t => t.id === target.id);
     if (targetIdx === -1) return;
-    const insertAt = placeAfter ? targetIdx + 1 : targetIdx;
-    without.splice(insertAt, 0, task);
+    without.splice(placeAfter ? targetIdx + 1 : targetIdx, 0, task);
     without.forEach((t, i) => { t.priority = i + 1; });
+    normalizePriorities(task.planType, task.scopeKey);
     saveState();
     renderPlanner(task.planType);
     if (task.planType === 'daily') renderWeeklySummaryPanel();
@@ -1098,7 +1163,36 @@
     }).join('');
   }
 
+  // 일간·주간·월간 탭에서만 쓰는 구분 필터 사이드바.
+  function renderSidebar() {
+    const el = document.getElementById('sidebar');
+    if (!el) return;
+    const isPlanner = ['daily', 'weekly', 'monthly'].includes(activeTabName);
+    el.classList.toggle('hidden', !isPlanner);
+    if (!isPlanner) { el.innerHTML = ''; return; }
+    pruneFilter();
+    const list = tasksIn(activeTabName, scopeKeyFor(activeTabName));
+    const openCount = fn => list.filter(x => !x.done && fn(x)).length;
+    const rows = [
+      { key: '', label: t('side.all'), color: null, count: openCount(() => true) },
+      ...state.taskCategories.map(c => ({ key: c.id, label: c.label, color: c.color, count: openCount(x => x.category === c.id) })),
+      { key: FILTER_NONE, label: t('task.noCategory'), color: null, count: openCount(x => !x.category) },
+    ];
+    el.innerHTML = `
+      <div class="side-head">${t('side.title')}</div>
+      <div class="side-list">
+        ${rows.map(r => `
+          <button type="button" class="side-item ${(state.filterCategory || '') === r.key ? 'active' : ''}" data-cat="${escapeHtml(r.key)}">
+            <span class="side-dot" style="background:${r.color || 'var(--border-strong)'}"></span>
+            <span class="side-label">${escapeHtml(r.label)}</span>
+            <span class="side-count">${r.count}</span>
+          </button>`).join('')}
+      </div>
+      <button type="button" class="btn small side-manage" data-act="manage-categories">${t('task.manageCategories')}</button>`;
+  }
+
   function renderPlanner(type) {
+    pruneFilter();
     const pointer = pointers[type];
     let scopeKey, titleText;
     if (type === 'daily') { scopeKey = dateStr(pointer); titleText = fmtDaily(pointer); }
@@ -1107,7 +1201,7 @@
 
     document.getElementById(`${type}-title`).textContent = titleText;
 
-    const tasks = state.tasks.filter(x => x.planType === type && x.scopeKey === scopeKey);
+    const tasks = tasksIn(type, scopeKey).filter(taskMatchesFilter);
     const doneCount = tasks.filter(x => x.done).length;
     const summaryEl = document.getElementById(`${type}-summary`);
     summaryEl.innerHTML = tasks.length
@@ -1116,7 +1210,11 @@
 
     const listEl = document.getElementById(`${type}-list`);
     if (tasks.length === 0) {
-      listEl.innerHTML = `<div class="empty-state">${escapeHtml(pt('taskEmpty'))}</div>`;
+      const msg = state.filterCategory
+        ? t('task.emptyFiltered', escapeHtml(activeFilterLabel()))
+        : escapeHtml(pt('taskEmpty'));
+      listEl.innerHTML = `<div class="empty-state">${msg}</div>`;
+      renderSidebar();
       return;
     }
     const sorted = [...tasks].sort((a, b) => {
@@ -1155,6 +1253,7 @@
         <button class="icon-btn" data-act="delete-task" title="${t('btn.delete')}">${ICON.trash}</button>
       </li>`;
     }).join('');
+    renderSidebar();
   }
 
   function renderWeeklySummaryPanel() {
@@ -1794,7 +1893,10 @@
       }
     }
 
-    const categoryOptions = state.taskCategories.map(c => `<option value="${c.id}" ${isEdit && existingTask.category === c.id ? 'selected' : ''}>${escapeHtml(c.label)}</option>`).join('');
+    // 왼쪽에서 특정 구분만 보고 있으면 새 항목도 그 구분으로 미리 잡아둡니다.
+    const presetCategory = isEdit ? existingTask.category
+      : (state.filterCategory && state.filterCategory !== FILTER_NONE ? state.filterCategory : null);
+    const categoryOptions = state.taskCategories.map(c => `<option value="${c.id}" ${presetCategory === c.id ? 'selected' : ''}>${escapeHtml(c.label)}</option>`).join('');
     const commonFields = `
         <div class="field">
           <label>${t('task.fPriority')}</label>
@@ -1804,7 +1906,7 @@
           <label>${t('task.fCategory')}</label>
           <div style="display:flex;gap:8px;align-items:center">
             <select name="category" style="flex:1">
-              <option value="" ${(!isEdit || !existingTask.category) ? 'selected' : ''}>${t('task.fCategoryNone')}</option>
+              <option value="" ${!presetCategory ? 'selected' : ''}>${t('task.fCategoryNone')}</option>
               ${categoryOptions}
             </select>
             <button type="button" class="btn small" data-act="manage-categories">${t('task.manageCategories')}</button>
@@ -1883,8 +1985,8 @@
           if (state.useKpi !== false) existingTask.kpiId = fd.get('kpiId') || null;
           existingTask.note = fd.get('note').trim();
           existingTask.dueTime = fd.get('dueTime') || null;
-          existingTask.priority = Number(fd.get('priority')) || 1;
           existingTask.category = fd.get('category') || null;
+          const fromScope = existingTask.scopeKey;
           if (planType === 'daily') {
             const dv = fd.get('rescheduleDate');
             if (dv && dv !== existingTask.scopeKey) { existingTask.scopeKey = dv; existingTask.carriedFrom = null; }
@@ -1898,6 +2000,9 @@
             const mv = fd.get('rescheduleMonth');
             if (mv && mv !== existingTask.scopeKey) { existingTask.scopeKey = mv; existingTask.carriedFrom = null; }
           }
+          // 날짜를 옮겼으면 떠난 쪽 번호도 메워줍니다.
+          insertAtPriority(existingTask, fd.get('priority'));
+          if (fromScope !== existingTask.scopeKey) normalizePriorities(planType, fromScope);
           saveState();
           closeModal();
           renderAll();
@@ -1918,7 +2023,7 @@
           planType,
           scopeKey,
           done: false,
-          priority: Number(fd.get('priority')) || defaultNextPriority(planType),
+          priority: null,
           category: fd.get('category') || null,
           createdAt: Date.now(),
         };
@@ -1933,6 +2038,12 @@
           newTasks.push(...extra);
         }
         state.tasks.push(...newTasks);
+        // 지정한 번호 자리에 끼워 넣고 그 뒤 업무들을 한 칸씩 뒤로 밉니다.
+        insertAtPriority(base, fd.get('priority') || defaultNextPriorityFor(planType, scopeKey));
+        newTasks.filter(x => x !== base).forEach(x => {
+          x.priority = null;
+          insertAtPriority(x, defaultNextPriorityFor(x.planType, x.scopeKey));
+        });
         saveState();
         closeModal();
         renderAll();
@@ -2066,6 +2177,28 @@
         timeField.classList.toggle('hidden', undatedCb.checked);
         alarmField.classList.toggle('hidden', undatedCb.checked);
       });
+
+      // 시작을 고르면 종료가 따라옵니다. 종료가 비었거나 시작보다 앞설 때만 손댑니다.
+      const startDateInput = root.querySelector('[name="startDate"]');
+      const endDateInput = root.querySelector('[name="endDate"]');
+      const startTimeInput = root.querySelector('[name="startTime"]');
+      const endTimeInput = root.querySelector('[name="endTime"]');
+      startDateInput.addEventListener('change', () => {
+        const v = startDateInput.value;
+        if (!v) return;
+        if (!endDateInput.value || endDateInput.value < v) endDateInput.value = v;
+        endDateInput.min = v;
+      });
+      startTimeInput.addEventListener('change', () => {
+        const v = startTimeInput.value;
+        if (!v) return;
+        const sameDay = !endDateInput.value || endDateInput.value === startDateInput.value;
+        if (!sameDay) return; // 여러 날 일정이면 종료 시간은 건드리지 않습니다.
+        if (endTimeInput.value && endTimeInput.value > v) return;
+        const [h, m] = v.split(':').map(Number);
+        endTimeInput.value = h >= 23 ? '23:59' : `${pad(h + 1)}:${pad(m)}`;
+      });
+      if (startDateInput.value) endDateInput.min = startDateInput.value;
       root.querySelector('[data-act="manage-types"]').addEventListener('click', () => openEventTypeModal());
       root.querySelector('[data-act="cancel"]').addEventListener('click', closeModal);
       if (isEdit) {
@@ -2405,6 +2538,17 @@
     if (!btn) return;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === `tab-${btn.dataset.tab}`));
+    activeTabName = btn.dataset.tab;
+    renderSidebar();
+  });
+
+  document.getElementById('sidebar').addEventListener('click', e => {
+    if (e.target.closest('[data-act="manage-categories"]')) { openTaskCategoryModal(); return; }
+    const item = e.target.closest('.side-item');
+    if (!item) return;
+    state.filterCategory = item.dataset.cat || null;
+    saveState();
+    ['daily', 'weekly', 'monthly'].forEach(renderPlanner);
   });
 
   document.getElementById('btn-add-kpi').addEventListener('click', () => openKpiModal(null));
